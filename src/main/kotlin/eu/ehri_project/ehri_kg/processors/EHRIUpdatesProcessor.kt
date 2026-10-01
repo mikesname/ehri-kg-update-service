@@ -86,7 +86,7 @@ class EHRIUpdatesProcessor(
         val resultSet = SparqlDatasetQueryProcessor(dataset).query(sparqlQuery)
         val events = resultSet.asSequence().toList().map {
             EHRIEvent(
-                it.getResource("eventId").localName,
+                it.getLiteral("eventId").string,
                 it.getLiteral("eventType").string,
                 it.getLiteral("date").string,
                 it.getLiteral("ids").string,
