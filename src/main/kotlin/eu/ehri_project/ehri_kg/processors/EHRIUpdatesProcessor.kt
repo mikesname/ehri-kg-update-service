@@ -34,7 +34,7 @@ class EHRIUpdatesProcessor(
             it.concatMap {
                 Flowable.fromIterable(getEventTypeAndId(it)).map {
                    processEvent(it)
-                }.defaultIfEmpty(emptyEventReport)
+                }
             }
         }
     }
@@ -93,8 +93,14 @@ class EHRIUpdatesProcessor(
                 it.getLiteral("types").string,
             )
         }
+        if (events.isEmpty()) {
+            if (dataset.defaultModel.isEmpty) logger.debug { "Empty event received" }
+            else logger.warn {
+                "Event data received but no event could be extracted from it; " +
+                    "check that the SSE mapping rules match $eventDetailsSparqlQuery"
+            }
+        }
         return events
-            .ifEmpty { emptyList<EHRIEvent>().also { logger.debug { "Empty event received or impossible to extract its information" } } }
     }
 }
 
