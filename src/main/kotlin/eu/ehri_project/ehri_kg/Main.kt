@@ -5,6 +5,7 @@ import com.github.ajalt.clikt.core.main
 import com.github.ajalt.clikt.parameters.groups.OptionGroup
 import com.github.ajalt.clikt.parameters.groups.cooccurring
 import com.github.ajalt.clikt.parameters.options.default
+import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
 import eu.ehri_project.ehri_kg.consumers.EHRISSEConsumer
@@ -15,6 +16,8 @@ import eu.ehri_project.ehri_kg.helpers.KafkaEmitter
 import eu.ehri_project.ehri_kg.helpers.SourceHelper
 import eu.ehri_project.ehri_kg.processors.EHRIUpdatesProcessor
 import eu.ehri_project.ehri_kg.processors.UpdatesProcessorFactory
+import eu.ehri_project.ehri_kg.sparql.LoggingSparqlStore
+import eu.ehri_project.ehri_kg.sparql.RemoteSparqlStore
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.*
 import kotlinx.serialization.json.Json
@@ -34,18 +37,30 @@ class EhriKgUpdateService : CliktCommand() {
         .default("conf/config.properties")
     val outputToFile by option("-o", "--output",
             help="File path where to store the reports of this service. Example: output.jsonl")
+    val sseEndpoint by option("-e", "--sseEndpoint",
+            help="SSE endpoint to listen to, overriding the sseEndpoint property and the STREAM URL of the mapping rules. Example: https://portal.ehri-project.eu/admin/monitor/_events")
+    val dryRun by option("-n", "--dryRun",
+            help="Log the SPARQL update statements instead of executing them, without accessing the triple store. The events history is not updated.")
+        .flag()
     val kafkaOptions by KafkaOptions().cooccurring()
 
 
     override fun run() {
         val kafkaEmitter = kafkaOptions?.let { KafkaEmitter(it.kafkaServer, it.kafkaTopic) }
         val config = Config(entitiesConfig)
-        val lastEventId = config.get("resumeFromEventId").ifEmpty { null }
-        val observable = EHRISSEConsumer(mappingFile, lastEventId = lastEventId).processEvents()
+        val observable = EHRISSEConsumer(
+            mappingFile,
+            lastEventId = config.getOptional("resumeFromEventId"),
+            sseEndpoint = sseEndpoint ?: config.getOptional("sseEndpoint")
+        ).processEvents()
         val database = DatabaseManager(config)
+        val sparqlStore = if (dryRun) LoggingSparqlStore()
+            else RemoteSparqlStore(config.get("querySparqlEndpoint"), config.get("updateSparqlEndpoint"))
+        if (dryRun) logger.info { "Dry run: SPARQL update statements will be logged, not executed" }
         HttpClient().use { httpClient ->
             val graphQLClient = GraphQLQueryProcessor(config.get("graphQLEndpoint"), httpClient)
-            EHRIUpdatesProcessor(config, database, UpdatesProcessorFactory(config, graphQLClient)::createUpdateProcessor)
+            val factory = UpdatesProcessorFactory(config, graphQLClient, sparqlStore = sparqlStore)
+            EHRIUpdatesProcessor(config, database, factory::createUpdateProcessor)
                 .process(observable)
                 .blockingGet()
                 .blockingForEach { eventReport ->
@@ -56,7 +71,7 @@ class EhriKgUpdateService : CliktCommand() {
                             val filteredJsonReport = Json.encodeToString(listOf(eventReport))
                             SourceHelper.writeToFile(it, "${filteredJsonReport}\n")
                         }
-                        database.insertReport(eventReport)
+                        if (!dryRun) database.insertReport(eventReport)
                     }
                     kafkaEmitter?.sendMessage(jsonReport)
                 }

@@ -12,12 +12,14 @@ This service is mainly meant to be operated through the command line for which i
 Usage: ehri-kg-update-service [<options>]
 
 Options:
-  -m, --mapping=<text>  The mapping rules to be processed by shexml-streaming. Default: conf/ehri_sse_mapping.shexml
-  -c, --conf=<text>     The properties file with the entities configurations. Default: conf/config.properties
-  -o, --output=<text>   File path where to store the reports of this service. Example: output.jsonl
-  --kafkaServer=<text>  Kafka topic where to push the reports of this service. Example: localhost:9092
-  --kafkaTopic=<text>   Kafka topic where to push the reports of this service. Example: my-topic
-  -h, --help            Show this message and exit
+  -m, --mapping=<text>      The mapping rules to be processed by shexml-streaming. Default: conf/ehri_sse_mapping.shexml
+  -c, --conf=<text>         The properties file with the entities configurations. Default: conf/config.properties
+  -o, --output=<text>       File path where to store the reports of this service. Example: output.jsonl
+  -e, --sseEndpoint=<text>  SSE endpoint to listen to, overriding the sseEndpoint property and the STREAM URL of the mapping rules. Example: https://portal.ehri-project.eu/admin/monitor/_events
+  -n, --dryRun              Log the SPARQL update statements instead of executing them, without accessing the triple store. The events history is not updated.
+  --kafkaServer=<text>      Kafka topic where to push the reports of this service. Example: localhost:9092
+  --kafkaTopic=<text>       Kafka topic where to push the reports of this service. Example: my-topic
+  -h, --help                Show this message and exit
 ```
 
 There are no mandatory options to run the service, as by default it assumes that the 
@@ -28,6 +30,9 @@ The service uses a logger to print all the messages of the application, and it w
 after processing each event. Additionally, these reports can also be stored in an output file (using the `-o` option) 
 following the JSON Lines format and in an append-only fashion. Similarly, it is also possible to push the reports to a Kafka
 topic using the `--kafkaServer` and `--kafkaTopic` options.
+
+With the `--dryRun` option the service processes events as usual but, instead of executing the SPARQL DELETE and
+INSERT statements, prints them to the terminal through the `sparql` logger.
 
 ## Architecture
 The architecture of this service heavily relies on the Reactive programming precepts in order to be able to process the 
