@@ -6,17 +6,21 @@ import eu.ehri_project.ehri_kg.helpers.SourceHelper
 import eu.ehri_project.ehri_kg.model.EHRIEvent
 import eu.ehri_project.ehri_kg.model.EHRITypes
 import eu.ehri_project.ehri_kg.model.EHRIUpdateReport
+import eu.ehri_project.ehri_kg.model.UnsupportedEntityTypeException
 import eu.ehri_project.ehri_kg.sparql.SparqlDatasetQueryProcessor
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.core.Single
 import org.apache.jena.query.Dataset
 
-class EHRIUpdatesProcessor(val config: Config) {
+class EHRIUpdatesProcessor(
+    val config: Config,
+    val database: DatabaseManager = DatabaseManager(config),
+    private val createUpdateProcessor: (EHRITypes) -> UpdatesProcessor = UpdatesProcessorFactory(config)::createUpdateProcessor
+) {
 
     val eventDetailsSparqlQuery = config.get("eventDetailsSparqlQuery")
     val emptyEventReport = EHRIUpdateReport(EHRIEvent("", "", "", "", ""), emptyList(), emptyList())
-    val database = DatabaseManager(config)
     var previousEventErroredOrNotProcessed = false
 
     init {
@@ -37,7 +41,7 @@ class EHRIUpdatesProcessor(val config: Config) {
 
     fun processEvent(event: EHRIEvent): EHRIUpdateReport {
         try {
-            with(UpdatesProcessorFactory(config).createUpdateProcessor(selectEntityTypeCase(event.type, event.id))) {
+            with(createUpdateProcessor(selectEntityTypeCase(event.type, event.id))) {
                 if(!previousEventErroredOrNotProcessed && database.checkIfSuccessfullyProcessed(event)) {
                     logger.info { "Skipping the event as it was already successfully processed in a previous run: $event" }
                     return emptyEventReport
@@ -52,7 +56,8 @@ class EHRIUpdatesProcessor(val config: Config) {
                     return EHRIUpdateReport(event, executedQueries, dataDiff)
                 }
             }
-        } catch (_: IllegalStateException) {
+        } catch (e: UnsupportedEntityTypeException) {
+            logger.debug { "Ignoring event ${event.eventId}: ${e.message}" }
             return emptyEventReport
         } catch (e: Exception) {
             return EHRIUpdateReport(event, emptyList(), emptyList(), e.stackTraceToString())
@@ -71,7 +76,7 @@ class EHRIUpdatesProcessor(val config: Config) {
                 else if(id.startsWith("ehri_pers")) EHRITypes.PERSON
                 else null
             } ?: throw Exception("Unknown or unsupported Historical Agent type for id $id")
-            else -> error("Unknown or unsupported type $type")
+            else -> throw UnsupportedEntityTypeException("Unknown or unsupported type $type")
         }
     }
 

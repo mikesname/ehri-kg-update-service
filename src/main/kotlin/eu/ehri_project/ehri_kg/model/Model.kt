@@ -21,6 +21,8 @@ data class EHRIEvent(
     val id: String,
     val type: String)
 
+class UnsupportedEntityTypeException(message: String) : Exception(message)
+
 enum class EHRITypes {
     COUNTRY, INSTITUTION, ARCHIVAL_DESCRIPTION, VOCABULARY, CORPORATE_BODY, PERSON, LINK
 }

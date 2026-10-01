@@ -17,6 +17,16 @@ class SparqlDatasetQueryProcessor(val dataset: Dataset) {
     }
 }
 
+interface SparqlStore {
+    fun construct(query: String): Model
+    fun update(query: String)
+}
+
+class RemoteSparqlStore(val queryEndpoint: String, val updateEndpoint: String) : SparqlStore {
+    override fun construct(query: String): Model = SparqlEndpointQueryProcessor(queryEndpoint).construct(query)
+    override fun update(query: String) = SparqlEndpointQueryProcessor(updateEndpoint).update(query)
+}
+
 class SparqlEndpointQueryProcessor(val endpoint: String) {
 
     fun query(query: String): ResultSet {
