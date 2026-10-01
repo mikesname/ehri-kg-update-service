@@ -25,6 +25,8 @@ class Config(private val props: Properties) {
     fun get(key: String): String {
         return props.getProperty(key)
     }
+
+    fun getOptional(key: String): String? = props.getProperty(key)?.ifEmpty { null }
 }
 
 class KafkaEmitter(val url: String, val topic: String) {
