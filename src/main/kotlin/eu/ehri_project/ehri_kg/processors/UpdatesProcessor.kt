@@ -1,12 +1,14 @@
 package eu.ehri_project.ehri_kg.processors
 
+import eu.ehri_project.ehri_kg.graphql.GraphQLClient
 import eu.ehri_project.ehri_kg.graphql.GraphQLQueryProcessor
 import eu.ehri_project.ehri_kg.helpers.Config
 import eu.ehri_project.ehri_kg.helpers.SourceHelper
 import eu.ehri_project.ehri_kg.model.EHRIEvent
 import eu.ehri_project.ehri_kg.model.EHRITypes
 import eu.ehri_project.ehri_kg.shexml.ShExMLMappingLauncherProxy
-import eu.ehri_project.ehri_kg.sparql.SparqlEndpointQueryProcessor
+import eu.ehri_project.ehri_kg.sparql.RemoteSparqlStore
+import eu.ehri_project.ehri_kg.sparql.SparqlStore
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.runBlocking
 import org.apache.jena.query.Dataset
@@ -18,7 +20,9 @@ import kotlin.text.replace
 
 class UpdatesProcessorFactory(val config: Config,
                               val querySparqlEndpoint: String = config.get("querySparqlEndpoint"),
-                              val updateSparqlEndpoint: String = config.get("updateSparqlEndpoint")) {
+                              val updateSparqlEndpoint: String = config.get("updateSparqlEndpoint"),
+                              val sparqlStore: SparqlStore = RemoteSparqlStore(querySparqlEndpoint, updateSparqlEndpoint),
+                              val graphQLClient: GraphQLClient = GraphQLQueryProcessor(config.get("graphQLEndpoint"))) {
 
     private val logger = KotlinLogging.logger {}
 
@@ -32,8 +36,8 @@ class UpdatesProcessorFactory(val config: Config,
                     config.get("countriesDeleteSparqlQuery"),
                     config.get("countriesConstructSparqlQuery"),
                     config,
-                    querySparqlEndpoint,
-                    updateSparqlEndpoint
+                    sparqlStore,
+                    graphQLClient
                 )
             EHRITypes.INSTITUTION ->
                 CountriesUpdatesProcessor(
@@ -42,8 +46,8 @@ class UpdatesProcessorFactory(val config: Config,
                     config.get("institutionsDeleteSparqlQuery"),
                     config.get("institutionsConstructSparqlQuery"),
                     config,
-                    querySparqlEndpoint,
-                    updateSparqlEndpoint
+                    sparqlStore,
+                    graphQLClient
                 )
             EHRITypes.ARCHIVAL_DESCRIPTION ->
                 ArchivalDescriptionsUpdatesProcessor(
@@ -52,8 +56,8 @@ class UpdatesProcessorFactory(val config: Config,
                     config.get("archivalDescriptionsDeleteSparqlQuery"),
                     config.get("archivalDescriptionsConstructSparqlQuery"),
                     config,
-                    querySparqlEndpoint,
-                    updateSparqlEndpoint
+                    sparqlStore,
+                    graphQLClient
                 )
             EHRITypes.VOCABULARY ->
                 VocabulariesUpdatesProcessor(
@@ -62,8 +66,8 @@ class UpdatesProcessorFactory(val config: Config,
                     config.get("vocabulariesDeleteSparqlQuery"),
                     config.get("vocabulariesConstructSparqlQuery"),
                     config,
-                    querySparqlEndpoint,
-                    updateSparqlEndpoint
+                    sparqlStore,
+                    graphQLClient
                 )
             EHRITypes.CORPORATE_BODY ->
                 HistoricalAgentsUpdatesProcessor(
@@ -72,8 +76,8 @@ class UpdatesProcessorFactory(val config: Config,
                     config.get("historicalAgentsDeleteSparqlQuery"),
                     config.get("historicalAgentsConstructSparqlQuery"),
                     config,
-                    querySparqlEndpoint,
-                    updateSparqlEndpoint
+                    sparqlStore,
+                    graphQLClient
                 )
             EHRITypes.PERSON ->
                 HistoricalAgentsUpdatesProcessor(
@@ -82,8 +86,8 @@ class UpdatesProcessorFactory(val config: Config,
                     config.get("historicalAgentsDeleteSparqlQuery"),
                     config.get("historicalAgentsConstructSparqlQuery"),
                     config,
-                    querySparqlEndpoint,
-                    updateSparqlEndpoint
+                    sparqlStore,
+                    graphQLClient
                 )
             EHRITypes.LINK ->
                 LinksUpdatesProcessor(
@@ -92,8 +96,8 @@ class UpdatesProcessorFactory(val config: Config,
                     config.get("linksDeleteSparqlQuery"),
                     config.get("linksConstructSparqlQuery"),
                     config,
-                    querySparqlEndpoint,
-                    updateSparqlEndpoint
+                    sparqlStore,
+                    graphQLClient
                 )
         }
     }
@@ -104,10 +108,9 @@ abstract class UpdatesProcessor(config: Config) {
     abstract val shexmlMappingRules: String
     abstract val deleteSparqlQuery: String
     abstract val constructSparqlQuery: String
-    abstract val querySparqlEndpoint: String
-    abstract val updateSparqlEndpoint: String
+    abstract val sparqlStore: SparqlStore
+    abstract val graphQLClient: GraphQLClient
 
-    val graphQLEndpoint = config.get("graphQLEndpoint")
     val insertSparqlQuery = config.get("insertSparqlQuery")
 
     private val logger = KotlinLogging.logger {}
@@ -116,7 +119,7 @@ abstract class UpdatesProcessor(config: Config) {
         val query = SourceHelper.readFile(graphQLQuery)
         val finalQuery = query.replaceFirst("<id>", event.id).replace("\n", "\\n")
         return runBlocking {
-            GraphQLQueryProcessor(graphQLEndpoint).download(event, finalQuery)
+            graphQLClient.download(event, finalQuery)
         }
     }
 
@@ -134,7 +137,7 @@ abstract class UpdatesProcessor(config: Config) {
         val insertQuery = SourceHelper.readFile(insertSparqlQuery)
             .replace("<\$ntriplesNewContent>", nTriplesNewContent)
         logger.debug { "Insert query: $insertQuery" }
-        SparqlEndpointQueryProcessor(updateSparqlEndpoint).update(insertQuery)
+        sparqlStore.update(insertQuery)
         return listOf(insertQuery)
     }
 
@@ -142,7 +145,7 @@ abstract class UpdatesProcessor(config: Config) {
         logger.info { "Launching DELETE query against the SPARQL endpoint" }
         val deleteQuery = replaceEntityId(event, SourceHelper.readFile(deleteSparqlQuery))
         logger.debug { "Delete query: $deleteQuery" }
-        SparqlEndpointQueryProcessor(updateSparqlEndpoint).update(deleteQuery)
+        sparqlStore.update(deleteQuery)
         return listOf(deleteQuery)
     }
 
@@ -177,7 +180,7 @@ abstract class UpdatesProcessor(config: Config) {
 
     fun getDataStatus(event: EHRIEvent): Model {
         val query = replaceEntityId(event, SourceHelper.readFile(constructSparqlQuery))
-        return SparqlEndpointQueryProcessor(querySparqlEndpoint).construct(query)
+        return sparqlStore.construct(query)
     }
 
     open fun replaceEntityId(event: EHRIEvent, fileContent: String): String {
@@ -191,8 +194,8 @@ class InstitutionsUpdatesProcessor(
     override val deleteSparqlQuery: String,
     override val constructSparqlQuery: String,
     config: Config,
-    override val querySparqlEndpoint: String,
-    override val updateSparqlEndpoint: String
+    override val sparqlStore: SparqlStore,
+    override val graphQLClient: GraphQLClient
 ) : UpdatesProcessor(config)
 
 class CountriesUpdatesProcessor(
@@ -201,8 +204,8 @@ class CountriesUpdatesProcessor(
     override val deleteSparqlQuery: String,
     override val constructSparqlQuery: String,
     config: Config,
-    override val querySparqlEndpoint: String,
-    override val updateSparqlEndpoint: String
+    override val sparqlStore: SparqlStore,
+    override val graphQLClient: GraphQLClient
 ) : UpdatesProcessor(config)
 
 class ArchivalDescriptionsUpdatesProcessor(
@@ -211,8 +214,8 @@ class ArchivalDescriptionsUpdatesProcessor(
     override val deleteSparqlQuery: String,
     override val constructSparqlQuery: String,
     config: Config,
-    override val querySparqlEndpoint: String,
-    override val updateSparqlEndpoint: String
+    override val sparqlStore: SparqlStore,
+    override val graphQLClient: GraphQLClient
 ) : UpdatesProcessor(config)
 
 class LinksUpdatesProcessor(
@@ -221,8 +224,8 @@ class LinksUpdatesProcessor(
     override val deleteSparqlQuery: String,
     override val constructSparqlQuery: String,
     config: Config,
-    override val querySparqlEndpoint: String,
-    override val updateSparqlEndpoint: String
+    override val sparqlStore: SparqlStore,
+    override val graphQLClient: GraphQLClient
 ) : UpdatesProcessor(config)
 
 class VocabulariesUpdatesProcessor(
@@ -231,8 +234,8 @@ class VocabulariesUpdatesProcessor(
     override val deleteSparqlQuery: String,
     override val constructSparqlQuery: String,
     config: Config,
-    override val querySparqlEndpoint: String,
-    override val updateSparqlEndpoint: String
+    override val sparqlStore: SparqlStore,
+    override val graphQLClient: GraphQLClient
 ) : UpdatesProcessor(config) {
     override fun replaceEntityId(event: EHRIEvent, fileContent: String): String {
         val eventId = event.id
@@ -248,8 +251,8 @@ class HistoricalAgentsUpdatesProcessor(
     override val deleteSparqlQuery: String,
     override val constructSparqlQuery: String,
     config: Config,
-    override val querySparqlEndpoint: String,
-    override val updateSparqlEndpoint: String
+    override val sparqlStore: SparqlStore,
+    override val graphQLClient: GraphQLClient
 ) : UpdatesProcessor(config) {
     override fun replaceEntityId(event: EHRIEvent, fileContent: String): String {
         val eventId = event.id

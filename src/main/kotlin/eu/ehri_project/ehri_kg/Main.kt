@@ -40,7 +40,7 @@ class EhriKgUpdateService : CliktCommand() {
         val lastEventId = config.get("resumeFromEventId").ifEmpty { null }
         val observable = EHRISSEConsumer(mappingFile, lastEventId = lastEventId).processEvents()
         val database = DatabaseManager(config)
-        EHRIUpdatesProcessor(config)
+        EHRIUpdatesProcessor(config, database)
             .process(observable)
             .blockingGet()
             .blockingForEach { eventReport ->

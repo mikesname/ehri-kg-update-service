@@ -16,12 +16,11 @@ object SourceHelper {
 
 }
 
-class Config(propertiesFilePath: String) {
-    private val props = Properties()
+class Config(private val props: Properties) {
 
-    init {
-        props.load(SourceHelper.readFileAsInputStream(propertiesFilePath))
-    }
+    constructor(propertiesFilePath: String) : this(Properties().apply {
+        SourceHelper.readFileAsInputStream(propertiesFilePath).use { load(it) }
+    })
 
     fun get(key: String): String {
         return props.getProperty(key)
