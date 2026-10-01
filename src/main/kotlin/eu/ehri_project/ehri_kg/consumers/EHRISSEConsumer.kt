@@ -16,20 +16,23 @@ class EHRISSEConsumer(mappingRulesPath: String, val lastEventId: String? = null)
     val mappingRules: String = SourceHelper.readFile(mappingRulesPath)
 
     fun processEvents(): Single<Flowable<Dataset>> {
-        val finalMappingRules = lastEventId?.let {
+        return ReactiveConverters.convertToRxJava(
+            StreamMappingLauncher(
+                false,
+                true,
+                KafkaOptions(Option.empty<String>(), Option.empty<Duration>(), false)
+            ).launchMapping(buildMappingRules())
+        ).map { it.toFlowable(BackpressureStrategy.BUFFER) }
+    }
+
+    fun buildMappingRules(): String {
+        return lastEventId?.let {
             mappingRules.lines().joinToString("\n") {
                 if (it.startsWith("STREAM"))
                     it.replaceFirst(">", "?Last-Event-Id=$lastEventId>")
                 else it
             }
         } ?: mappingRules
-        return ReactiveConverters.convertToRxJava(
-            StreamMappingLauncher(
-                false,
-                true,
-                KafkaOptions(Option.empty<String>(), Option.empty<Duration>(), false)
-            ).launchMapping(finalMappingRules)
-        ).map { it.toFlowable(BackpressureStrategy.BUFFER) }
     }
 
 }
