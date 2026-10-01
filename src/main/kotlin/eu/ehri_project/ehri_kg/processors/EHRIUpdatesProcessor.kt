@@ -15,8 +15,8 @@ import org.apache.jena.query.Dataset
 
 class EHRIUpdatesProcessor(
     val config: Config,
-    val database: DatabaseManager = DatabaseManager(config),
-    private val createUpdateProcessor: (EHRITypes) -> UpdatesProcessor = UpdatesProcessorFactory(config)::createUpdateProcessor
+    val database: DatabaseManager,
+    private val createUpdateProcessor: (EHRITypes) -> UpdatesProcessor
 ) {
 
     val eventDetailsSparqlQuery = config.get("eventDetailsSparqlQuery")
