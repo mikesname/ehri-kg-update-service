@@ -11,13 +11,12 @@ fun interface GraphQLClient {
     suspend fun download(event: EHRIEvent, query: String): String
 }
 
-class GraphQLQueryProcessor(val endpoint: String) : GraphQLClient {
+class GraphQLQueryProcessor(val endpoint: String, private val client: HttpClient) : GraphQLClient {
 
     private val logger = KotlinLogging.logger {}
 
     override suspend fun download(event: EHRIEvent, query: String): String {
         logger.info { "Downloading data from the GraphQL endpoint for the entity with id ${event.id}" }
-        val client = HttpClient()
         return client.post(endpoint) {
             contentType(ContentType.Application.Json)
             setBody(query)

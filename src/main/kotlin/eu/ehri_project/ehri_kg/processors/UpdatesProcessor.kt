@@ -1,7 +1,6 @@
 package eu.ehri_project.ehri_kg.processors
 
 import eu.ehri_project.ehri_kg.graphql.GraphQLClient
-import eu.ehri_project.ehri_kg.graphql.GraphQLQueryProcessor
 import eu.ehri_project.ehri_kg.helpers.Config
 import eu.ehri_project.ehri_kg.helpers.SourceHelper
 import eu.ehri_project.ehri_kg.model.EHRIEvent
@@ -19,10 +18,10 @@ import java.io.ByteArrayOutputStream
 import kotlin.text.replace
 
 class UpdatesProcessorFactory(val config: Config,
+                              val graphQLClient: GraphQLClient,
                               val querySparqlEndpoint: String = config.get("querySparqlEndpoint"),
                               val updateSparqlEndpoint: String = config.get("updateSparqlEndpoint"),
-                              val sparqlStore: SparqlStore = RemoteSparqlStore(querySparqlEndpoint, updateSparqlEndpoint),
-                              val graphQLClient: GraphQLClient = GraphQLQueryProcessor(config.get("graphQLEndpoint"))) {
+                              val sparqlStore: SparqlStore = RemoteSparqlStore(querySparqlEndpoint, updateSparqlEndpoint)) {
 
     private val logger = KotlinLogging.logger {}
 
