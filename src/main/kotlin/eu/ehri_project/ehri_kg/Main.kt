@@ -60,7 +60,7 @@ class EhriKgUpdateService : CliktCommand() {
         HttpClient().use { httpClient ->
             val graphQLClient = GraphQLQueryProcessor(config.get("graphQLEndpoint"), httpClient)
             val factory = UpdatesProcessorFactory(config, graphQLClient, sparqlStore = sparqlStore)
-            EHRIUpdatesProcessor(config, database, factory::createUpdateProcessor)
+            EHRIUpdatesProcessor(config, database, factory::createUpdateProcessor, dryRun)
                 .process(observable)
                 .blockingGet()
                 .blockingForEach { eventReport ->

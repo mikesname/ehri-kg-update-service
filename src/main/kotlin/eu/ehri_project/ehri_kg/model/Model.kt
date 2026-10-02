@@ -10,8 +10,8 @@ data class EHRIUpdateReport(
     val executedQueries: List<String>,
     val rdfDiff: List<String>,
     val errors: String = "",
-    val timeStamp: String = DateTimeFormatter.ISO_INSTANT.format(Instant.now())) {
-}
+    val timeStamp: String = DateTimeFormatter.ISO_INSTANT.format(Instant.now()),
+    val dryRun: Boolean = false)
 
 @Serializable
 data class EHRIEvent(
