@@ -16,18 +16,20 @@ class DatabaseManager(config: Config) {
     private val creationScriptPath = config.get("databaseCreationScript")
 
     init {
-        createDatabaseIfNotExists()
+        initialiseSchema()
     }
 
     private fun connect(): Connection = DriverManager.getConnection("jdbc:sqlite:$databasePath")
 
-    private fun createDatabaseIfNotExists() {
+    // We can run initialiseSchema on existing databases, if, e.g. they
+    // don't have the index...
+    private fun initialiseSchema() {
         if (!File(databasePath).isFile) {
             logger.info { "Creating database for registering the events history at $databasePath" }
-            connect().use { connection ->
-                connection.createStatement().use { statement ->
-                    statement.executeUpdate(SourceHelper.readFile(creationScriptPath))
-                }
+        }
+        connect().use { connection ->
+            connection.createStatement().use { statement ->
+                statement.executeUpdate(SourceHelper.readFile(creationScriptPath))
             }
         }
     }
