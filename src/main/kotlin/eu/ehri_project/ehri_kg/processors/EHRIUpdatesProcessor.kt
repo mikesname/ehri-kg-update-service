@@ -16,7 +16,8 @@ import org.apache.jena.query.Dataset
 class EHRIUpdatesProcessor(
     val config: Config,
     val database: DatabaseManager,
-    private val createUpdateProcessor: (EHRITypes) -> UpdatesProcessor
+    private val createUpdateProcessor: (EHRITypes) -> UpdatesProcessor,
+    private val dryRun: Boolean = false
 ) {
 
     val eventDetailsSparqlQuery = config.get("eventDetailsSparqlQuery")
@@ -53,14 +54,14 @@ class EHRIUpdatesProcessor(
                     val executedQueries = update(event, turtleResult)
                     val dataAfter = getDataStatus(event)
                     val dataDiff = compareGraphs(dataBefore, dataAfter)
-                    return EHRIUpdateReport(event, executedQueries, dataDiff)
+                    return EHRIUpdateReport(event, executedQueries, dataDiff, dryRun = dryRun)
                 }
             }
         } catch (e: UnsupportedEntityTypeException) {
             logger.debug { "Ignoring event ${event.eventId}: ${e.message}" }
             return emptyEventReport
         } catch (e: Exception) {
-            return EHRIUpdateReport(event, emptyList(), emptyList(), e.stackTraceToString())
+            return EHRIUpdateReport(event, emptyList(), emptyList(), e.stackTraceToString(), dryRun = dryRun)
         }
     }
 
