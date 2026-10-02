@@ -110,11 +110,11 @@ abstract class UpdatesProcessor(config: Config) {
     abstract val sparqlStore: SparqlStore
     abstract val graphQLClient: GraphQLClient
 
-    val insertSparqlQuery = config.get("insertSparqlQuery")
+    private val insertSparqlQuery = config.get("insertSparqlQuery")
 
     private val logger = KotlinLogging.logger {}
 
-    fun downloadContents(event: EHRIEvent): String {
+    fun fetchGraphQLData(event: EHRIEvent): String {
         val query = SourceHelper.readFile(graphQLQuery)
         val finalQuery = query.replaceFirst("<id>", event.id).replace("\n", "\\n")
         return runBlocking {
