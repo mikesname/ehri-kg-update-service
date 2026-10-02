@@ -37,6 +37,12 @@ class EHRISSEConsumer(
         }
     }
 
+    fun streamUrl(): String {
+        val line = buildMappingRules().lines().firstOrNull { it.startsWith("STREAM") }
+            ?: throw IllegalArgumentException("No STREAM declaration found in the SSE mapping rules")
+        return line.substringAfter('<').substringBefore('>')
+    }
+
     private fun rewriteStreamLine(line: String): String {
         val start = line.indexOf('<')
         val end = line.indexOf('>', start)

@@ -1,6 +1,7 @@
 package eu.ehri_project.ehri_kg
 
 import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.core.ProgramResult
 import com.github.ajalt.clikt.core.main
 import com.github.ajalt.clikt.parameters.groups.OptionGroup
 import com.github.ajalt.clikt.parameters.groups.cooccurring
@@ -9,6 +10,8 @@ import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
 import eu.ehri_project.ehri_kg.consumers.EHRISSEConsumer
+import eu.ehri_project.ehri_kg.consumers.SseConnectionException
+import eu.ehri_project.ehri_kg.consumers.SseEndpointCheck
 import eu.ehri_project.ehri_kg.database.DatabaseManager
 import eu.ehri_project.ehri_kg.graphql.GraphQLQueryProcessor
 import eu.ehri_project.ehri_kg.helpers.Config
@@ -20,6 +23,7 @@ import eu.ehri_project.ehri_kg.sparql.LoggingSparqlStore
 import eu.ehri_project.ehri_kg.sparql.RemoteSparqlStore
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.*
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 
 fun main(args: Array<String>) {
@@ -48,20 +52,27 @@ class EhriKgUpdateService : CliktCommand() {
     override fun run() {
         val kafkaEmitter = kafkaOptions?.let { KafkaEmitter(it.kafkaServer, it.kafkaTopic) }
         val config = Config(entitiesConfig)
-        val observable = EHRISSEConsumer(
+        val consumer = EHRISSEConsumer(
             mappingFile,
             lastEventId = config.getOptional("resumeFromEventId"),
             sseEndpoint = sseEndpoint ?: config.getOptional("sseEndpoint")
-        ).processEvents()
+        )
         val database = DatabaseManager(config)
         val sparqlStore = if (dryRun) LoggingSparqlStore()
             else RemoteSparqlStore(config.get("querySparqlEndpoint"), config.get("updateSparqlEndpoint"))
         if (dryRun) logger.info { "Dry run: SPARQL update statements will be logged, not executed" }
         HttpClient().use { httpClient ->
+            val sseUrl = consumer.streamUrl()
+            try {
+                runBlocking { SseEndpointCheck.verify(httpClient, sseUrl) }
+            } catch (e: SseConnectionException) {
+                logger.error(e.cause) { e.message }
+                throw ProgramResult(1)
+            }
             val graphQLClient = GraphQLQueryProcessor(config.get("graphQLEndpoint"), httpClient)
             val factory = UpdatesProcessorFactory(config, graphQLClient, sparqlStore = sparqlStore)
             EHRIUpdatesProcessor(config, database, factory::createUpdateProcessor, dryRun)
-                .process(observable)
+                .process(consumer.processEvents())
                 .blockingGet()
                 .blockingForEach { eventReport ->
                     val jsonReport = Json.encodeToString(eventReport)
@@ -75,6 +86,8 @@ class EhriKgUpdateService : CliktCommand() {
                     }
                     kafkaEmitter?.sendMessage(jsonReport)
                 }
+            logger.error { "The SSE stream at $sseUrl ended unexpectedly" }
+            throw ProgramResult(1)
         }
     }
 }
