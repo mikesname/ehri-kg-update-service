@@ -6,7 +6,9 @@ import eu.ehri_project.ehri_kg.support.testConfig
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class DatabaseManagerTest {
@@ -81,5 +83,63 @@ class DatabaseManagerTest {
         assertFalse(database.checkIfSuccessfullyProcessed(event.copy(id = "nl")))
         assertFalse(database.checkIfSuccessfullyProcessed(event.copy(type = "Repository")))
         assertFalse(database.checkIfSuccessfullyProcessed(event.copy(eventType = "delete-event")))
+    }
+
+    private fun DatabaseManager.record(eventId: String, itemId: String = "gb", errors: String = "") =
+        insertReport(report(event.copy(eventId = eventId, id = itemId), errors, timeStamp = "2026-01-01T00:00:00Z"))
+
+    @Test
+    fun `there is nothing to resume from without history`() {
+        assertNull(DatabaseManager(testConfig(dir)).resumeEventId())
+    }
+
+    @Test
+    fun `resumes after the last event when nothing failed`() {
+        val database = DatabaseManager(testConfig(dir))
+        database.record("evt-1")
+        database.record("evt-2", itemId = "gb")
+        database.record("evt-2", itemId = "nl")
+
+        assertEquals("evt-2", database.resumeEventId())
+    }
+
+    @Test
+    fun `resumes before the first failed event so that it is replayed`() {
+        val database = DatabaseManager(testConfig(dir))
+        database.record("evt-1")
+        database.record("evt-2", errors = "boom")
+        database.record("evt-3")
+
+        assertEquals("evt-1", database.resumeEventId())
+    }
+
+    @Test
+    fun `a failure in any item of an event replays the whole event`() {
+        val database = DatabaseManager(testConfig(dir))
+        database.record("evt-1")
+        database.record("evt-2", itemId = "gb")
+        database.record("evt-2", itemId = "nl", errors = "boom")
+
+        assertEquals("evt-1", database.resumeEventId())
+    }
+
+    @Test
+    fun `failures that were later retried successfully are resolved`() {
+        val database = DatabaseManager(testConfig(dir))
+        database.record("evt-1")
+        database.record("evt-2", errors = "boom")
+        database.record("evt-3")
+        database.record("evt-2")
+
+        assertEquals("evt-3", database.resumeEventId())
+    }
+
+    @Test
+    fun `there is nothing to resume from when the first event failed`() {
+        val database = DatabaseManager(testConfig(dir))
+        database.record("evt-1", errors = "boom")
+        database.record("evt-2")
+
+        assertNull(database.resumeEventId())
     }
 }

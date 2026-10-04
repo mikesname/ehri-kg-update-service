@@ -97,6 +97,16 @@ class EHRIUpdatesProcessorTest {
     }
 
     @Test
+    fun `Portal keep-alives yield no report`() {
+        // The document shexml-streaming builds from the Portal's keep-alive, EventSource.Event("")
+        val keepAlive = mapSseEvent("""{"id":"","event":"","retry":-1,"data":null}""")
+
+        val reports = run(keepAlive, sseEvent("evt-1", "update-event", "gb" to "Country"), keepAlive)
+
+        assertEquals(listOf("evt-1"), reports.map { it.receivedEvent.eventId })
+    }
+
+    @Test
     fun `each id and type pair of an event is processed separately`() {
         val reports = run(sseEvent("evt-1", "update-event", "gb" to "Country", "ann-1" to "Annotation"))
 

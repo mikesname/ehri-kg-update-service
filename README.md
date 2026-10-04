@@ -17,6 +17,7 @@ Options:
   -o, --output=<text>       File path where to store the reports of this service. Example: output.jsonl
   -e, --sseEndpoint=<text>  SSE endpoint to listen to, overriding the sseEndpoint property and the STREAM URL of the mapping rules. Example: https://portal.ehri-project.eu/admin/monitor/_events
   -n, --dryRun              Log the SPARQL update statements instead of executing them, without accessing the triple store. The events history is not updated.
+  -r, --resume              Resume the SSE stream from the events history: after the last recorded event, or before the first event that failed so that it is retried. Overrides the resumeFromEventId property.
   --kafkaServer=<text>      Kafka topic where to push the reports of this service. Example: localhost:9092
   --kafkaTopic=<text>       Kafka topic where to push the reports of this service. Example: my-topic
   -h, --help                Show this message and exit

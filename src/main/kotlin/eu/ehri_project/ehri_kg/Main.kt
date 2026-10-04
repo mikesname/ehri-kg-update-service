@@ -46,18 +46,27 @@ class EhriKgUpdateService : CliktCommand() {
     val dryRun by option("-n", "--dryRun",
             help="Log the SPARQL update statements instead of executing them, without accessing the triple store. The events history is not updated.")
         .flag()
+    val resume by option("-r", "--resume",
+            help="Resume the SSE stream from the events history: after the last recorded event, or before the first event that failed so that it is retried. Overrides the resumeFromEventId property.")
+        .flag()
     val kafkaOptions by KafkaOptions().cooccurring()
 
 
     override fun run() {
         val kafkaEmitter = kafkaOptions?.let { KafkaEmitter(it.kafkaServer, it.kafkaTopic) }
         val config = Config(entitiesConfig)
+        val database = DatabaseManager(config)
+        val lastEventId = if (resume) {
+            database.resumeEventId().also {
+                if (it != null) logger.info { "Resuming the SSE stream after event $it from the events history" }
+                else logger.info { "No events history to resume from" }
+            }
+        } else config.getOptional("resumeFromEventId")
         val consumer = EHRISSEConsumer(
             mappingFile,
-            lastEventId = config.getOptional("resumeFromEventId"),
+            lastEventId = lastEventId,
             sseEndpoint = sseEndpoint ?: config.getOptional("sseEndpoint")
         )
-        val database = DatabaseManager(config)
         val sparqlStore = if (dryRun) LoggingSparqlStore()
             else RemoteSparqlStore(config.get("querySparqlEndpoint"), config.get("updateSparqlEndpoint"))
         if (dryRun) logger.info { "Dry run: SPARQL update statements will be logged, not executed" }

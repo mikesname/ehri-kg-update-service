@@ -95,7 +95,11 @@ class EHRIUpdatesProcessor(
             )
         }
         if (events.isEmpty()) {
-            if (dataset.defaultModel.isEmpty) logger.debug { "Empty event received" }
+            // Keep-alive messages carry no data, but the mapping still turns them into a skeleton event
+            // whose only literal is an empty event type
+            val hasData = dataset.defaultModel.listObjects().toList()
+                .any { it.isLiteral && it.asLiteral().lexicalForm.isNotEmpty() }
+            if (!hasData) logger.debug { "Keep-alive or empty message received" }
             else logger.warn {
                 "Event data received but no event could be extracted from it; " +
                     "check that the SSE mapping rules match $eventDetailsSparqlQuery"

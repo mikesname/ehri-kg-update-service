@@ -59,6 +59,40 @@ class DatabaseManager(config: Config) {
         }
     }
 
+    // The event to resume the stream after: the last one received before the first event whose latest
+    // attempt failed (so that it is replayed), or the last one received if nothing has failed. Events are
+    // ordered by their first attempt, as later attempts are replays.
+    fun resumeEventId(): String? {
+        connect().use { connection ->
+            connection.createStatement().use { statement ->
+                statement.executeQuery(
+                    """
+                    WITH attempts AS (
+                        SELECT event_id, MIN(rowid) AS first_row, MAX(rowid) AS last_row
+                        FROM events_history
+                        GROUP BY event_id, item_id, item_type, event_type
+                    ),
+                    first_failed_event AS (
+                        SELECT a.event_id
+                        FROM attempts a JOIN events_history h ON h.rowid = a.last_row
+                        WHERE h.errors IS NOT NULL AND h.errors != ''
+                        ORDER BY a.first_row
+                        LIMIT 1
+                    )
+                    SELECT event_id FROM attempts
+                    WHERE first_row < COALESCE(
+                        (SELECT MIN(first_row) FROM attempts WHERE event_id IN (SELECT event_id FROM first_failed_event)),
+                        (SELECT MAX(first_row) + 1 FROM attempts))
+                    ORDER BY first_row DESC
+                    LIMIT 1;
+                    """.trimIndent()
+                ).use { rs ->
+                    return if (rs.next()) rs.getString("event_id") else null
+                }
+            }
+        }
+    }
+
     fun checkIfSuccessfullyProcessed(event: EHRIEvent): Boolean {
         connect().use { connection ->
             connection.prepareStatement(
