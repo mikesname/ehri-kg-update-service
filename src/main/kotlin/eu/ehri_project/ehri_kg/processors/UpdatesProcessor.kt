@@ -29,7 +29,7 @@ class UpdatesProcessorFactory(val config: Config,
         logger.info { "Detected entity type $type" }
         return when(type) {
             EHRITypes.COUNTRY ->
-                InstitutionsUpdatesProcessor(
+                CountriesUpdatesProcessor(
                     config.get("countriesGraphQLQuery"),
                     config.get("countriesShexmlMappingRules"),
                     config.get("countriesDeleteSparqlQuery"),
@@ -39,7 +39,7 @@ class UpdatesProcessorFactory(val config: Config,
                     graphQLClient
                 )
             EHRITypes.INSTITUTION ->
-                CountriesUpdatesProcessor(
+                InstitutionsUpdatesProcessor(
                     config.get("institutionsGraphQLQuery"),
                     config.get("institutionsShexmlMappingRules"),
                     config.get("institutionsDeleteSparqlQuery"),
