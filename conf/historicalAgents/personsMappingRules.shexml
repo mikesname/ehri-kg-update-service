@@ -271,6 +271,7 @@ ITERATOR people_iterator <jsonpath: $.data.query> {
     FIELD structure <description.structure>
     FIELD generalContext <description.generalContext>
     FIELD occupation <description.occupation>
+    FIELD seeAlso <seeAlso>
     ITERATOR dates <description.dates[*]> {
         FIELD startDate <startDate>
         FIELD endDate <endDate>
@@ -322,6 +323,7 @@ ehri:Person ehri_pers:[person.id] {
     rico:authorizedBy @ehri:AuthorityMandate ;
     ehri:structureOrGenealogy [person.structure] @[person.languageCode MATCHING langcode_two_digit_equivalent] ; # This can be divided in structure of cb and genealogy of family if needed
     rico:generalDescription [person.generalContext] @[person.languageCode MATCHING langcode_two_digit_equivalent] ;
+    rdfs:seeAlso [person.seeAlso] ;
 }
 
 ehri:AgentOtherName ehri_pers:[other_name_id] {
