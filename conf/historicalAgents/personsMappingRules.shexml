@@ -8,6 +8,7 @@ PREFIX ehri_dates: <http://lod.ehri-project-test.eu/dates/>
 PREFIX ehri_legal_status: <http://lod.ehri-project-test.eu/legalStatuses/>
 PREFIX ehri_mandate: <http://lod.ehri-project-test.eu/mandates/>
 PREFIX ehri_activity: <http://lod.ehri-project-test.eu/activities/>
+PREFIX ehri_activity_types: <http://lod.ehri-project-test.eu/activityTypes/>
 PREFIX rico: <https://www.ica.org/standards/RiC/ontology#>
 MATCHER langcode_two_digit_equivalent <aar AS aa &
 abk AS ab &
@@ -270,12 +271,6 @@ ITERATOR people_iterator <jsonpath: $.data.query> {
     FIELD structure <description.structure>
     FIELD generalContext <description.generalContext>
     FIELD occupation <description.occupation>
-  	ITERATOR links <links[*]> {
-        ITERATOR targets <targets[?(@.type=='DocumentaryUnit')]> {
-            FIELD unit_id <id>
-            POPPED_FIELD person_id <id>
-        }
-    }
     ITERATOR dates <description.dates[*]> {
         FIELD startDate <startDate>
         FIELD endDate <endDate>
@@ -329,14 +324,6 @@ ehri:Person ehri_pers:[person.id] {
     rico:generalDescription [person.generalContext] @[person.languageCode MATCHING langcode_two_digit_equivalent] ;
 }
 
-ehri:Link ehri_units:[person.links.targets.unit_id] {
-    rico:hasOrHadSubject ehri_pers:[person.links.targets.person_id] ;
-}
-
-ehri:LinkInverse ehri_pers:[person.links.targets.person_id] {
-    rico:isOrWasSubjectOf ehri_units:[person.links.targets.unit_id] ;
-}
-
 ehri:AgentOtherName ehri_pers:[other_name_id] {
 	a ehri:AlternateAgentName ;
 	rico:name [person.otherFormsOfName.name] ;
@@ -369,14 +356,14 @@ ehri:AuthorityLegalStatus ehri_pers:[transformers.combinedPathPersonLegalStatus(
 
 ehri:AuthorityOccupation ehri_pers:[transformers.combinedPathPersonOccupation(person.id) IF validators.nonEmpty(person.occupation)] {
     a rico:Activity ;
-    rico:hasActivityType rico:OccupationType ;
+    rico:hasActivityType ehri_activity_types:occupation ;
     rico:generalDescription [person.occupation] @[person.languageCode MATCHING langcode_two_digit_equivalent] ;
     rico:isOrWasPerformedBy ehri_pers:[person.id] ;
 }
 
 ehri:AuthorityFunction ehri_pers:[transformers.combinedPathPersonFunction(person.funcs.person_id, person.funcs.func.index())] {
     a rico:Activity ;
-    rico:hasActivityType ehri:FunctionType ;
+    rico:hasActivityType ehri_activity_types:function ;
     rico:generalDescription [person.funcs.func] @[person.funcs.langCode MATCHING langcode_two_digit_equivalent] ;
     rico:isOrWasPerformedBy ehri_pers:[person.funcs.person_id] ;
 }
@@ -385,4 +372,13 @@ ehri:AuthorityMandate ehri_pers:[transformers.combinedPathPersonMandate(person.m
     a rico:Mandate ;
     rico:generalDescription [person.mandates.mandate] @[person.mandates.langCode MATCHING langcode_two_digit_equivalent] ;
     rico:authorizes ehri_pers:[person.mandates.person_id] ;
+}
+ehri:FunctionType ehri_activity_types:function {
+    a ehri:FunctionType ;
+    rico:name "Function"@en ;
+}
+
+ehri:OccupationType ehri_activity_types:occupation {
+    a rico:OccupationType ;
+    rico:name "Occupation"@en ;
 }

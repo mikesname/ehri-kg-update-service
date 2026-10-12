@@ -10,6 +10,7 @@ PREFIX ehri_dates: <http://lod.ehri-project-test.eu/dates/>
 PREFIX ehri_legal_status: <http://lod.ehri-project-test.eu/legalStatuses/>
 PREFIX ehri_mandate: <http://lod.ehri-project-test.eu/mandates/>
 PREFIX ehri_activity: <http://lod.ehri-project-test.eu/activities/>
+PREFIX ehri_activity_types: <http://lod.ehri-project-test.eu/activityTypes/>
 PREFIX rico: <https://www.ica.org/standards/RiC/ontology#>
 MATCHER langcode_two_digit_equivalent <aar AS aa &
 abk AS ab &
@@ -272,13 +273,6 @@ ITERATOR cb_iterator <jsonpath: $.data.query> {
     FIELD structure <description.structure>
     FIELD generalContext <description.generalContext>
     FIELD occupation <description.occupation>
-  	ITERATOR links <links[*]> {
-        ITERATOR targets <targets[?(@.type=='DocumentaryUnit')]> {
-            FIELD unit_id <id>
-            POPPED_FIELD parent_id <id>
-            POPPED_FIELD typeOfEntity <typeOfEntity>
-        }
-    }
     ITERATOR dates <description.dates[*]> {
         FIELD startDate <startDate>
         FIELD endDate <endDate>
@@ -345,14 +339,6 @@ ehri:CBAndFamily ehri_vocabularies:[transformers.getFamilyOrCbPrefix(cbs.id, cbs
     rico:generalDescription [cbs.generalContext] @[cbs.languageCode MATCHING langcode_two_digit_equivalent] ;
 }
 
-ehri:Link ehri_units:[cbs.links.targets.unit_id] {
-    rico:hasOrHadSubject ehri_vocabularies:[transformers.getFamilyOrCbPrefix(cbs.links.targets.parent_id, cbs.links.targets.typeOfEntity)] ; # it is possible to use different prefixes for families and cbs
-}
-
-ehri:LinkInverse ehri_vocabularies:[transformers.getFamilyOrCbPrefix(cbs.links.targets.parent_id, cbs.links.targets.typeOfEntity)] {
-    rico:isOrWasSubjectOf ehri_units:[cbs.links.targets.unit_id] ; # it is possible to use different prefixes for families and cbs
-}
-
 ehri:AgentOtherName ehri_vocabularies:[transformers.combinedPathOtherNamesCbs(cb.cb_iterator.otherFormsOfName.cb_id, cb.cb_iterator.otherFormsOfName.typeOfEntity, cb.cb_iterator.otherFormsOfName.name)] {
 	a ehri:AlternateAgentName ;
 	rico:name [cbs.otherFormsOfName.name] ;
@@ -385,14 +371,14 @@ ehri:AuthorityLegalStatus ehri_vocabularies:[transformers.combinedPathHistorical
 
 ehri:AuthorityOccupation ehri_vocabularies:[transformers.combinedPathHistoricalAgentOccupation(cbs.id, cbs.typeOfEntity) IF validators.nonEmpty(cbs.occupation)] {
     a rico:Activity ;
-    rico:hasActivityType rico:OccupationType ;
+    rico:hasActivityType ehri_activity_types:occupation ;
     rico:generalDescription [cbs.occupation] @[cbs.languageCode MATCHING langcode_two_digit_equivalent] ;
     rico:isOrWasPerformedBy ehri_vocabularies:[transformers.getFamilyOrCbPrefix(cbs.id, cbs.typeOfEntity)] ;
 }
 
 ehri:AuthorityFunction ehri_vocabularies:[transformers.combinedPathHistoricalAgentFunction(cbs.funcs.cb_id, cbs.funcs.typeOfEntity, cbs.funcs.func.index()) IF validators.nonEmpty(cbs.funcs.func)] {
     a rico:Activity ;
-    rico:hasActivityType ehri:FunctionType ;
+    rico:hasActivityType ehri_activity_types:function ;
     rico:generalDescription [cbs.funcs.func] @[cbs.funcs.langCode MATCHING langcode_two_digit_equivalent] ;
     rico:isOrWasPerformedBy ehri_vocabularies:[transformers.getFamilyOrCbPrefix(cbs.funcs.cb_id, cbs.funcs.typeOfEntity)] ;
 }
@@ -401,4 +387,13 @@ ehri:AuthorityMandate ehri_vocabularies:[transformers.combinedPathHistoricalAgen
     a rico:Mandate ;
     rico:generalDescription [cbs.mandates.mandate] @[cbs.mandates.langCode MATCHING langcode_two_digit_equivalent] ;
     rico:authorizes ehri_vocabularies:[transformers.getFamilyOrCbPrefix(cbs.mandates.cb_id, cbs.mandates.typeOfEntity)] ;
+}
+ehri:FunctionType ehri_activity_types:function {
+    a ehri:FunctionType ;
+    rico:name "Function"@en ;
+}
+
+ehri:OccupationType ehri_activity_types:occupation {
+    a rico:OccupationType ;
+    rico:name "Occupation"@en ;
 }

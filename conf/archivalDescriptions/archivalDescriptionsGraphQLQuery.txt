@@ -54,4 +54,38 @@
     repository {
       id
     }
+    creators: connected(accessPointType: [creator], direction: outgoing) {
+      item {
+        type
+        ... on HistoricalAgent {
+          identifier
+          scheme: description {
+            name: typeOfEntity
+          }
+        }
+        ... on CvocConcept {
+          identifier
+          scheme: vocabulary {
+            name: identifier
+          }
+        }
+      }
+    }
+    subjects: connected(accessPointType: [subject, person, corporateBody, family, place], direction: outgoing) {
+      item {
+        type
+        ... on HistoricalAgent {
+          identifier
+          scheme: description {
+            name: typeOfEntity
+          }
+        }
+        ... on CvocConcept {
+          identifier
+          scheme: vocabulary {
+            name: identifier
+          }
+        }
+      }
+    }
   } }" }

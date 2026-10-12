@@ -22,15 +22,6 @@
       id
       identifier
     }
-    links {
-      id
-      type
-      field
-      targets {
-        id
-        type
-      }
-    }
     vocabulary {
       id
       type
