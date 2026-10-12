@@ -337,7 +337,7 @@ ehri:Holding ehri_units:[holding.holding_id] { # common shape
 	rico:hasRecordSetType ric_rst:[transformers.getRecordSetType(holding.descriptions.levelOfDescription) IF validators.isRecordSetTypeDefinedInRiC(holding.descriptions.levelOfDescription)] ;
 	rico:hasRecordSetType ehri_rst:[transformers.getEHRIDefinedRecordSetType(holding.descriptions.levelOfDescription) IF validators.isRecordSetTypeDefinedInEHRI(holding.descriptions.levelOfDescription)] ;
 	rico:title [holding.descriptions.name] @[holding.descriptions.languageCode MATCHING langcode_two_digit_equivalent] ;
-	rico:hasOrHadTitle @ehri:HoldingParralelFormOfName ;
+	rico:hasOrHadTitle @ehri:HoldingParallelFormOfName ;
 	rico:scopeAndContent [holding.descriptions.scopeAndContent] @[holding.descriptions.languageCode MATCHING langcode_two_digit_equivalent] ;
 	rico:recordResourceExtent [holding.descriptions.extentAndMedium] @[holding.descriptions.languageCode MATCHING langcode_two_digit_equivalent] ;
 	rico:recordResourceStructure [holding.descriptions.systemOfArrangement] @[holding.descriptions.languageCode MATCHING langcode_two_digit_equivalent] ;
@@ -375,7 +375,7 @@ ehri:Institution ehri_institutions:[holding.repositoryId] {
 	rico:isOrWasHolderOf ehri_units:[holding.holding_id] ;
 }
 
-ehri:HoldingParralelFormOfName ehri_units:[parallel_name_id] {
+ehri:HoldingParallelFormOfName ehri_units:[parallel_name_id] {
 	a rico:Title ;
 	rico:name [holding.descriptions.parallelFormsOfName.name] @[holding.descriptions.parallelFormsOfName.langCode MATCHING langcode_two_digit_equivalent] ;
 	rico:isOrWasTitleOf ehri_units:[holding.descriptions.parallelFormsOfName.holding_id] ;
