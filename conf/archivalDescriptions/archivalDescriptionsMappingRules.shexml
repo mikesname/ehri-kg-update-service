@@ -347,7 +347,7 @@ ehri:Holding ehri_units:[holding.holding_id] { # common shape
 	rico:hasEndDate @ehri:HoldingEndDate ;
 	rico:isOrWasIncludedIn ehri_units:[holding.parentId] ;
 	rico:resultsOrResultedFrom @ehri:Acquisition ;
-	rico:identifier [holding.identifier] ;
+	rico:identifier [holding.identifier] xsd:string ;
 	ehri:biographicalHistory [holding.descriptions.biographicalHistory] @[holding.descriptions.languageCode MATCHING langcode_two_digit_equivalent] ;
 	ehri:archivalHistory [holding.descriptions.archivalHistory] @[holding.descriptions.languageCode MATCHING langcode_two_digit_equivalent] ;
 	ehri:appraisal [holding.descriptions.appraisal] @[holding.descriptions.languageCode MATCHING langcode_two_digit_equivalent] ;
