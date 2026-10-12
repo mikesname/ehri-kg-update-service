@@ -2,6 +2,7 @@
   HistoricalAgent(id: \"<id>\") {
     id
     identifier
+    seeAlso
     description {
       languageCode
       name

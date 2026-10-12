@@ -273,6 +273,7 @@ ITERATOR cb_iterator <jsonpath: $.data.query> {
     FIELD structure <description.structure>
     FIELD generalContext <description.generalContext>
     FIELD occupation <description.occupation>
+    FIELD seeAlso <seeAlso>
     ITERATOR dates <description.dates[*]> {
         FIELD startDate <startDate>
         FIELD endDate <endDate>
@@ -337,6 +338,7 @@ ehri:CBAndFamily ehri_vocabularies:[transformers.getFamilyOrCbPrefix(cbs.id, cbs
     rico:authorizedBy @ehri:AuthorityMandate ;
     ehri:structureOrGenealogy [cbs.structure] @[cbs.languageCode MATCHING langcode_two_digit_equivalent] ; # This can be divided in structure of cb and genealogy of family if needed
     rico:generalDescription [cbs.generalContext] @[cbs.languageCode MATCHING langcode_two_digit_equivalent] ;
+    rdfs:seeAlso [cbs.seeAlso] ;
 }
 
 ehri:AgentOtherName ehri_vocabularies:[transformers.combinedPathOtherNamesCbs(cb.cb_iterator.otherFormsOfName.cb_id, cb.cb_iterator.otherFormsOfName.typeOfEntity, cb.cb_iterator.otherFormsOfName.name)] {
