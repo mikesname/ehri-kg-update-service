@@ -279,13 +279,6 @@ ITERATOR concept_iterator <jsonpath: $.data.query> {
     FIELD alt_label <altLabel>
     FIELD scope_note <scopeNote>
   }
-  ITERATOR links <links[*]> {
-    ITERATOR targets <targets[?(@.type=='DocumentaryUnit')]> {
-        FIELD unit_id <id>
-        POPPED_FIELD parent_id <item_id>
-        POPPED_FIELD vocabulary_set <vocabulary_id>
-    }
-  }
 }
 ITERATOR data <jsonpath: $.data> {
   FIELD item_id <query.identifier>
@@ -308,14 +301,6 @@ ehri:Concept ehri_vocabs:[transformers.generateVocabUri(concept.vocabulary_id, c
   skos:scopeNote [concept.descriptions.scope_note] @[concept.descriptions.langcode MATCHING langcode_two_digit_equivalent] ;
   # This cannot be generated at the moment, JSONPath functions are not supported in ShExML
   #skos:topConceptOf ehri_vocabs:[concept.vocabulary_id IF validators.greaterThanZero(concept.broader_length)] ;
-}
-
-ehri:ConceptLink ehri_units:[concept.links.targets.unit_id] {
-  	rico:hasOrHadSubject ehri_vocabs:[transformers.generateVocabUri(concept.links.targets.vocabulary_set, concept.links.targets.parent_id)] ;
-}
-
-ehri:ConceptLinkInverse ehri_vocabs:[transformers.generateVocabUri(concept.links.targets.vocabulary_set, concept.links.targets.parent_id)] {
-  	rico:isOrWasSubjectOf ehri_units:[concept.links.targets.unit_id] ;
 }
 
 ehri:ConceptScheme ehri_vocabs:[concept.vocabulary_id] {

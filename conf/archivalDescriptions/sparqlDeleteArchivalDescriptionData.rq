@@ -9,10 +9,10 @@ DELETE {
         # All the main triples where the unit is the subject except those that are generated as part of other set of mapping rules
         ?s ?p ?o .
         FILTER(?s = ehri_units:<$entityId>
-            && ?p != rico:hasOrHadSubject
             && ?p != rico:thingIsTargetOfRelation
             && ?p != rico:thingIsSourceOfRelation
-            && ?p != rico:hasCreator)
+            && ?p != ehri:hasCopy
+            && ?p != ehri:isCopyOf)
     }
     UNION
     {
@@ -27,7 +27,7 @@ DELETE {
     {
         # Other triples that need to be cleaned up on a per-case basis
         ?s ?p ?o .
-        VALUES ?p { rico:isOrWasHolderOf rico:isOrWasTitleOf rico:isBeginningDateOf rico:isEndDateOf rico:includesOrIncluded ehri:isOrWasScriptOf rico:isOrWasIdentifierOf }
+        VALUES ?p { rico:isOrWasHolderOf rico:isOrWasTitleOf rico:isBeginningDateOf rico:isEndDateOf rico:includesOrIncluded ehri:isOrWasScriptOf rico:isOrWasIdentifierOf rico:isCreatorOf rico:isOrWasSubjectOf }
         FILTER(?o = ehri_units:<$entityId>)
     }
 }
