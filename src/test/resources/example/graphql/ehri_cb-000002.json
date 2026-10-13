@@ -1,0 +1,30 @@
+{
+  "data": {
+    "query": {
+      "id": "ehri_cb-000002",
+      "identifier": "000002",
+      "seeAlso": [],
+      "description": {
+        "languageCode": "eng",
+        "name": "Example family",
+        "identifier": null,
+        "dates": [],
+        "lastName": null,
+        "firstName": null,
+        "source": null,
+        "typeOfEntity": "family",
+        "datesOfExistence": null,
+        "biographicalHistory": null,
+        "legalStatus": null,
+        "structure": "Example genealogy.",
+        "generalContext": null,
+        "occupation": null,
+        "otherFormsOfName": [],
+        "parallelFormsOfName": [],
+        "place": [],
+        "functions": [],
+        "mandates": []
+      }
+    }
+  }
+}
