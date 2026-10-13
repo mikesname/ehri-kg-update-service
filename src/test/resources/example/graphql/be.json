@@ -1,0 +1,14 @@
+{
+  "data": {
+    "query": {
+      "id": "be",
+      "type": "Country",
+      "identifier": "be",
+      "name": "Belgium",
+      "history": "Example archival history of Belgium.",
+      "situation": "Example archival situation in Belgium.",
+      "summary": "Example summary of EHRI research in Belgium.",
+      "extensive": "Example extensive account of EHRI research in Belgium."
+    }
+  }
+}

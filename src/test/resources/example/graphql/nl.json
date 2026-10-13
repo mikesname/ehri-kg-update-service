@@ -1,0 +1,14 @@
+{
+  "data": {
+    "query": {
+      "id": "nl",
+      "type": "Country",
+      "identifier": "nl",
+      "name": "Netherlands",
+      "history": null,
+      "situation": null,
+      "summary": null,
+      "extensive": null
+    }
+  }
+}

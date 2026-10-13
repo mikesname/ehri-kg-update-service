@@ -1,0 +1,76 @@
+{
+  "data": {
+    "query": {
+      "id": "be-000001-kd_00001-1",
+      "type": "DocumentaryUnit",
+      "identifier": "1",
+      "otherIdentifiers": [],
+      "descriptions": [
+        {
+          "languageCode": "eng",
+          "name": "Example sub-collection",
+          "identifier": null,
+          "accessPoints": [],
+          "dates": [],
+          "archivistNote": null,
+          "archivalHistory": null,
+          "acquisition": null,
+          "appraisal": null,
+          "accruals": null,
+          "biographicalHistory": null,
+          "conditionsOfAccess": null,
+          "conditionsOfReproduction": null,
+          "datesOfDescriptions": null,
+          "extentAndMedium": null,
+          "levelOfDescription": "subcollection",
+          "relatedUnitsOfDescription": null,
+          "physicalCharacteristics": null,
+          "publicationNote": null,
+          "ref": null,
+          "rulesAndConventions": null,
+          "scopeAndContent": null,
+          "separatedUnitsOfDescription": null,
+          "systemOfArrangement": null,
+          "findingAids": [],
+          "languageOfMaterial": [],
+          "locationOfOriginals": [],
+          "locationOfCopies": [],
+          "parallelFormsOfName": [],
+          "physicalLocation": [],
+          "notes": [],
+          "scriptOfMaterial": [],
+          "sources": [],
+          "unitDates": []
+        }
+      ],
+      "parent": {
+        "id": "be-000001-kd_00001"
+      },
+      "itemCount": 1,
+      "repository": {
+        "id": "be-000001"
+      },
+      "creators": [],
+      "subjects": [
+        {
+          "item": {
+            "type": "CvocConcept",
+            "identifier": "2",
+            "scheme": {
+              "name": "ehri-terms"
+            }
+          }
+        },
+        {
+          "item": {
+            "type": "HistoricalAgent",
+            "identifier": "000001",
+            "scheme": {
+              "name": "corporateBody"
+            }
+          }
+        }
+      ]
+    }
+  }
+}
