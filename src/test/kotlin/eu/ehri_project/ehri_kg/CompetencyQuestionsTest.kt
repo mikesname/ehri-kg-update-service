@@ -6,10 +6,7 @@ import eu.ehri_project.ehri_kg.support.InMemorySparqlStore
 import eu.ehri_project.ehri_kg.support.testProcessor
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
-import org.apache.jena.query.QueryExecutionFactory
-import org.apache.jena.query.QueryFactory
-import org.apache.jena.query.ResultSetFactory
-import org.apache.jena.query.ResultSetFormatter
+import org.apache.jena.query.*
 import org.apache.jena.riot.Lang
 import org.apache.jena.riot.RDFDataMgr
 import org.apache.jena.riot.ResultSetMgr
@@ -19,13 +16,14 @@ import org.junit.jupiter.api.DynamicTest.dynamicTest
 import org.junit.jupiter.api.TestFactory
 import java.io.File
 import kotlin.io.path.createTempDirectory
+import kotlin.math.exp
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.fail
 
 /**
- * Runs the competency questions of the EHRI-KG example dataset (https://github.com/EHRI/ehri-kg-example) against
- * a KG built from mock GraphQL responses, comparing their results with those of the example dataset.
+ * Runs a set of competency questions against a KG built from mock GraphQL responses,
+ * comparing their results with what we expect.
  *
  * The KG is written to build/e2e/kg.ttl for inspection.
  */
@@ -59,6 +57,12 @@ class CompetencyQuestionsTest {
         fun readCsv(path: String): List<Map<String, String>> =
             CSVParser.parse(File(example, path), Charsets.UTF_8, CSVFormat.DEFAULT.withFirstRecordAsHeader())
                 .use { parser -> parser.records.map { it.toMap() } }
+
+        fun debug(q: String?, actual: ResultSetRewindable) {
+            println("Q: $q")
+            ResultSetFormatter.out(System.out, actual)
+            actual.reset()
+        }
     }
 
     @Test
@@ -73,12 +77,13 @@ class CompetencyQuestionsTest {
             dynamicTest("${cq["#"]}: ${cq["Competency Question"]}") {
                 // Query the mock endpoints' named graphs instead of the remote services
                 val query = QueryFactory.create(cq["SPARQL"]!!.replace(Regex("""\bSERVICE\s+<"""), "GRAPH <"))
-                val actual = QueryExecutionFactory.create(query, store.dataset)
+                val actual: ResultSetRewindable = QueryExecutionFactory.create(query, store.dataset)
                     .use { ResultSetFactory.copyResults(it.execSelect()) }
                 val expected = File(example, "expected/${cq["#"]}.tsv").inputStream()
                     .use { ResultSetFactory.copyResults(ResultSetMgr.read(it, ResultSetLang.SPARQLResultSetTSV)) }
                 val matches = if (query.hasOrderBy()) ResultSetCompare.equalsByValueAndOrder(expected, actual)
                     else ResultSetCompare.equalsByValue(expected, actual)
+                debug(cq["Competency Question"], actual)
                 if (!matches) {
                     expected.reset()
                     actual.reset()
