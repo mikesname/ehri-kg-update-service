@@ -120,11 +120,8 @@
       "subjects": [
         {
           "item": {
-            "type": "CvocConcept",
-            "identifier": "1074",
-            "scheme": {
-              "name": "ehri-terms"
-            }
+            "id": "ehri_terms-1074",
+            "type": "CvocConcept"
           }
         }
       ]

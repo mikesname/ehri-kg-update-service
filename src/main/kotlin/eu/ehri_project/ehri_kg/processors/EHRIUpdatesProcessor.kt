@@ -73,7 +73,7 @@ class EHRIUpdatesProcessor(
             "CvocConcept" -> EHRITypes.VOCABULARY
             "Link" -> EHRITypes.LINK
             "HistoricalAgent" -> id?.let {
-                if(it.startsWith("ehri_cb")) EHRITypes.CORPORATE_BODY
+                if(it.startsWith("ehri_cb") || it.startsWith("ehri_fm")) EHRITypes.CORPORATE_BODY
                 else if(id.startsWith("ehri_pers")) EHRITypes.PERSON
                 else null
             } ?: throw Exception("Unknown or unsupported Historical Agent type for id $id")

@@ -54,20 +54,14 @@
       "subjects": [
         {
           "item": {
-            "type": "CvocConcept",
-            "identifier": "2",
-            "scheme": {
-              "name": "ehri-terms"
-            }
+            "id": "ehri_terms-2",
+            "type": "CvocConcept"
           }
         },
         {
           "item": {
-            "type": "HistoricalAgent",
-            "identifier": "000001",
-            "scheme": {
-              "name": "corporateBody"
-            }
+            "id": "ehri_cb-000001",
+            "type": "HistoricalAgent"
           }
         }
       ]

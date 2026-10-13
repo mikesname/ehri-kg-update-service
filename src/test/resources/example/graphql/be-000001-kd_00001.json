@@ -111,31 +111,22 @@
       "creators": [
         {
           "item": {
-            "type": "HistoricalAgent",
-            "identifier": "000001",
-            "scheme": {
-              "name": "corporateBody"
-            }
+            "id": "ehri_cb-000001",
+            "type": "HistoricalAgent"
           }
         }
       ],
       "subjects": [
         {
           "item": {
-            "type": "CvocConcept",
-            "identifier": "1",
-            "scheme": {
-              "name": "ehri-terms"
-            }
+            "id": "ehri_terms-1",
+            "type": "CvocConcept"
           }
         },
         {
           "item": {
-            "type": "CvocConcept",
-            "identifier": "1",
-            "scheme": {
-              "name": "ehri-camps"
-            }
+            "id": "ehri_camps-1",
+            "type": "CvocConcept"
           }
         }
       ]

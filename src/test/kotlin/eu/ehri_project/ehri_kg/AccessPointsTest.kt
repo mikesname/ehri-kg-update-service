@@ -1,17 +1,16 @@
 package eu.ehri_project.ehri_kg
 
-import eu.ehri_project.ehri_kg.database.DatabaseManager
-import eu.ehri_project.ehri_kg.model.EHRIEvent
-import eu.ehri_project.ehri_kg.processors.EHRIUpdatesProcessor
-import eu.ehri_project.ehri_kg.processors.UpdatesProcessorFactory
-import eu.ehri_project.ehri_kg.support.FakeGraphQLClient
 import eu.ehri_project.ehri_kg.support.InMemorySparqlStore
-import eu.ehri_project.ehri_kg.support.testConfig
+import eu.ehri_project.ehri_kg.support.loadResource
+import eu.ehri_project.ehri_kg.support.processEvents
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonPrimitive
 import org.apache.jena.rdf.model.ResourceFactory.createProperty
 import org.apache.jena.rdf.model.ResourceFactory.createResource
 import org.junit.jupiter.api.io.TempDir
@@ -38,32 +37,35 @@ class AccessPointsTest {
     val hasOrHadSubject = createProperty("https://www.ica.org/standards/RiC/ontology#hasOrHadSubject")
     val isOrWasSubjectOf = createProperty("https://www.ica.org/standards/RiC/ontology#isOrWasSubjectOf")
 
-    val original = File("src/test/resources/example/graphql/$unitId.json").readText()
+    val original = loadResource("example/graphql/$unitId.json")
+
+    /** The unit's GraphQL response, with some fields of its query replaced. */
+    private fun withQuery(change: (JsonObject) -> Map<String, JsonElement>): String {
+        val query = Json.parseToJsonElement(original).jsonObject.getValue("data").jsonObject.getValue("query").jsonObject
+        return JsonObject(mapOf("data" to JsonObject(mapOf("query" to JsonObject(query + change(query)))))).toString()
+    }
+
+    private fun JsonObject.subjects() = getValue("subjects").jsonArray
 
     /** The unit without its creator and with only its first subject. */
-    val updated = Json.parseToJsonElement(original).jsonObject.let { doc ->
-        val query = doc.getValue("data").jsonObject.getValue("query").jsonObject
-        val subjects = query.getValue("subjects").jsonArray
-        JsonObject(mapOf("data" to JsonObject(mapOf("query" to JsonObject(
-            query + mapOf("creators" to JsonArray(emptyList()), "subjects" to JsonArray(subjects.take(1)))
-        ))))).toString()
+    val updated = withQuery { mapOf("creators" to JsonArray(emptyList()), "subjects" to JsonArray(it.subjects().take(1))) }
+
+    /** The unit with a concept as its creator. */
+    val conceptCreator = withQuery { query ->
+        val concept = query.subjects().first {
+            it.jsonObject.getValue("item").jsonObject.getValue("type").jsonPrimitive.content == "CvocConcept"
+        }
+        mapOf("creators" to JsonArray(listOf(concept)))
     }
 
-    private fun process(vararg events: Pair<String, String>): InMemorySparqlStore {
-        val store = InMemorySparqlStore()
-        val responses = events.map { it.second }.iterator()
-        val config = testConfig(dir)
-        val processor = EHRIUpdatesProcessor(
-            config,
-            DatabaseManager(config),
-            UpdatesProcessorFactory(config, FakeGraphQLClient { responses.next() }, sparqlStore = store)::createUpdateProcessor
-        )
-        events.forEachIndexed { i, (eventType, _) ->
-            val report = processor.processEvent(EHRIEvent("e$i", eventType, "2026-01-01T00:00:00Z", unitId, "DocumentaryUnit"))
-            assertEquals("", report.errors)
-        }
-        return store
+    /** The unit with an extra subject that is not an agent or concept, and whose id has no '-'. */
+    val countrySubject = withQuery { query ->
+        val country = JsonObject(mapOf("item" to JsonObject(mapOf("id" to JsonPrimitive("be"), "type" to JsonPrimitive("Country")))))
+        mapOf("subjects" to JsonArray(query.subjects() + country))
     }
+
+    private fun process(vararg events: Pair<String, String>): InMemorySparqlStore =
+        processEvents(dir, unitId, "DocumentaryUnit", *events)
 
     @Test
     fun `a unit's access points are mapped in both directions`() {
@@ -88,13 +90,27 @@ class AccessPointsTest {
     }
 
     @Test
-    fun `a deleted unit's access points are removed in both directions`() {
+    fun `a deleted unit's access points are removed, and nothing refers to it`() {
         val kg = process("create-event" to original, "delete-event" to original).dataset.defaultModel
 
-        assertFalse(kg.contains(unit, hasCreator, creator))
-        assertFalse(kg.contains(creator, isCreatorOf, unit))
-        assertFalse(kg.contains(unit, hasOrHadSubject, camp))
-        assertFalse(kg.contains(camp, isOrWasSubjectOf, unit))
-        assertFalse(kg.contains(term, isOrWasSubjectOf, unit))
+        assertFalse(kg.contains(unit, hasCreator))
+        assertFalse(kg.contains(unit, hasOrHadSubject))
+        assertEquals(emptyList(), kg.listStatements(null, null, unit).toList().map { it.toString() })
+    }
+
+    @Test
+    fun `only agents are mapped as creators`() {
+        val kg = process("create-event" to conceptCreator).dataset.defaultModel
+
+        assertFalse(kg.contains(unit, hasCreator))
+        assertFalse(kg.listSubjectsWithProperty(isCreatorOf, unit).hasNext())
+    }
+
+    @Test
+    fun `access points to other kinds of item are ignored`() {
+        val kg = process("create-event" to countrySubject).dataset.defaultModel
+
+        assertTrue(kg.contains(unit, hasOrHadSubject, camp))
+        assertEquals(2, kg.listObjectsOfProperty(unit, hasOrHadSubject).toList().size)
     }
 }

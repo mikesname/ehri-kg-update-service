@@ -236,12 +236,8 @@ class VocabulariesUpdatesProcessor(
     override val sparqlStore: SparqlStore,
     override val graphQLClient: GraphQLClient
 ) : UpdatesProcessor(config) {
-    override fun replaceEntityId(event: EHRIEvent, fileContent: String): String {
-        val eventId = event.id
-            .replaceFirst("-", "\\/")
-            .replaceFirst('_', '-')
-        return fileContent.replace("<\$entityId>", eventId)
-    }
+    override fun replaceEntityId(event: EHRIEvent, fileContent: String): String =
+        fileContent.replace("<\$entityId>", vocabularyLocalName(event.id))
 }
 
 class HistoricalAgentsUpdatesProcessor(
@@ -253,10 +249,6 @@ class HistoricalAgentsUpdatesProcessor(
     override val sparqlStore: SparqlStore,
     override val graphQLClient: GraphQLClient
 ) : UpdatesProcessor(config) {
-    override fun replaceEntityId(event: EHRIEvent, fileContent: String): String {
-        val eventId = event.id
-            .replaceFirst("-", "\\/")
-            .replaceFirst('_', '-')
-        return fileContent.replace("<\$entityId>", eventId)
-    }
+    override fun replaceEntityId(event: EHRIEvent, fileContent: String): String =
+        fileContent.replace("<\$entityId>", vocabularyLocalName(event.id))
 }

@@ -1,8 +1,11 @@
 package eu.ehri_project.ehri_kg.support
 
+import eu.ehri_project.ehri_kg.database.DatabaseManager
 import eu.ehri_project.ehri_kg.graphql.GraphQLClient
 import eu.ehri_project.ehri_kg.helpers.Config
 import eu.ehri_project.ehri_kg.model.EHRIEvent
+import eu.ehri_project.ehri_kg.processors.EHRIUpdatesProcessor
+import eu.ehri_project.ehri_kg.processors.UpdatesProcessorFactory
 import eu.ehri_project.ehri_kg.shexml.ShExMLMappingLauncherProxy
 import eu.ehri_project.ehri_kg.sparql.SparqlStore
 import org.apache.jena.query.Dataset
@@ -14,6 +17,7 @@ import org.apache.jena.riot.RDFParser
 import org.apache.jena.update.UpdateAction
 import java.io.File
 import java.util.Properties
+import kotlin.test.assertEquals
 
 class InMemorySparqlStore(val dataset: Dataset = DatasetFactory.create()) : SparqlStore {
     val updates = mutableListOf<String>()
@@ -34,6 +38,30 @@ class FakeGraphQLClient(private val response: (EHRIEvent) -> String) : GraphQLCl
         requests += event to query
         return response(event)
     }
+}
+
+/** An events processor writing to [store], with the GraphQL API mocked by [graphQL]. */
+fun testProcessor(databaseDir: File, graphQL: GraphQLClient, store: SparqlStore): EHRIUpdatesProcessor {
+    val config = testConfig(databaseDir)
+    return EHRIUpdatesProcessor(
+        config,
+        DatabaseManager(config),
+        UpdatesProcessorFactory(config, graphQL, sparqlStore = store)::createUpdateProcessor
+    )
+}
+
+/**
+ * Processes events for one entity in an in-memory store, each with its GraphQL response, asserting that none fails.
+ */
+fun processEvents(databaseDir: File, id: String, type: String, vararg events: Pair<String, String>): InMemorySparqlStore {
+    val store = InMemorySparqlStore()
+    val responses = events.map { it.second }.iterator()
+    val processor = testProcessor(databaseDir, FakeGraphQLClient { responses.next() }, store)
+    events.forEachIndexed { i, (eventType, _) ->
+        val report = processor.processEvent(EHRIEvent("e$i", eventType, "2026-01-01T00:00:00Z", id, type))
+        assertEquals("", report.errors)
+    }
+    return store
 }
 
 fun testConfig(databaseDir: File): Config {

@@ -54,29 +54,20 @@
       "subjects": [
         {
           "item": {
-            "type": "HistoricalAgent",
-            "identifier": "000001",
-            "scheme": {
-              "name": "person"
-            }
+            "id": "ehri_pers-000001",
+            "type": "HistoricalAgent"
           }
         },
         {
           "item": {
-            "type": "HistoricalAgent",
-            "identifier": "000002",
-            "scheme": {
-              "name": "person"
-            }
+            "id": "ehri_pers-000002",
+            "type": "HistoricalAgent"
           }
         },
         {
           "item": {
-            "type": "HistoricalAgent",
-            "identifier": "000002",
-            "scheme": {
-              "name": "family"
-            }
+            "id": "ehri_fm-000002",
+            "type": "HistoricalAgent"
           }
         }
       ]

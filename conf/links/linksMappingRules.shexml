@@ -17,8 +17,7 @@ PREFIX ric_rst: <https://www.ica.org/standards/RiC/vocabularies/recordSetTypes#>
 PREFIX ehri_rst: <http://lod.ehri-project-test.eu/vocabularies/recordSetTypes#>
 PREFIX ehri_is_copy_of_relations: <http://lod.ehri-project-test.eu/isCopyOfRelations/>
 PREFIX ehri_has_copy_relations: <http://lod.ehri-project-test.eu/hasCopyRelations/>
-FUNCTIONS transformers <scala: https://raw.githubusercontent.com/EHRI/ehri-kg-mapping/refs/heads/enhancement-%2331/src/ShExMLTemplates/functions/Transformers.scala>
-FUNCTIONS validators <scala: https://raw.githubusercontent.com/EHRI/ehri-kg-mapping/refs/heads/enhancement-%2331/src/ShExMLTemplates/functions/Validators.scala>
+FUNCTIONS validators <scala: conf/functions/Validators.scala>
 SOURCE links_file <stdin>
 ITERATOR components_iterator <jsonpath: $.data.query> {
     PUSHED_FIELD source_id <source.id>
