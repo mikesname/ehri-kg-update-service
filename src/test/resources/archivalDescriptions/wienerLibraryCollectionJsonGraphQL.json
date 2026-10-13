@@ -115,7 +115,19 @@
       "itemCount": 0,
       "repository": {
         "id": "gb-003348"
-      }
+      },
+      "creators": [],
+      "subjects": [
+        {
+          "item": {
+            "type": "CvocConcept",
+            "identifier": "1074",
+            "scheme": {
+              "name": "ehri-terms"
+            }
+          }
+        }
+      ]
     }
   }
 }
