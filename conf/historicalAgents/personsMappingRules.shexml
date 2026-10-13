@@ -253,8 +253,8 @@ zha AS za &
 chi  AS zh &
 zho  AS zh &
 zul AS zu>
-FUNCTIONS transformers <scala: https://raw.githubusercontent.com/EHRI/ehri-kg-mapping/refs/heads/enhancement-%2331/src/ShExMLTemplates/functions/Transformers.scala>
-FUNCTIONS validators <scala: https://raw.githubusercontent.com/EHRI/ehri-kg-mapping/refs/heads/enhancement-%2331/src/ShExMLTemplates/functions/Validators.scala>
+FUNCTIONS transformers <scala: conf/functions/Transformers.scala>
+FUNCTIONS validators <scala: conf/functions/Validators.scala>
 SOURCE people <stdin>
 
 ITERATOR people_iterator <jsonpath: $.data.query> {
@@ -350,27 +350,27 @@ ehri:PersonEndDate ehri_dates:[person.dates.endDate] {
 	rico:isDeathDateOf ehri_pers:[person.dates.person_id] ;
 }
 
-ehri:AuthorityLegalStatus ehri_pers:[transformers.combinedPathPersonLegalStatus(person.id) IF validators.nonEmpty(person.legalStatus)] {
+ehri:AuthorityLegalStatus ehri_pers:[transformers.combinedPathHistoricalAgentLegalStatus(person.id) IF validators.nonEmpty(person.legalStatus)] {
     a rico:LegalStatus ;
     rico:generalDescription [person.legalStatus] @[person.languageCode MATCHING langcode_two_digit_equivalent] ;
     rico:isOrWasLegalStatusOf ehri_pers:[person.id] ;
 }
 
-ehri:AuthorityOccupation ehri_pers:[transformers.combinedPathPersonOccupation(person.id) IF validators.nonEmpty(person.occupation)] {
+ehri:AuthorityOccupation ehri_pers:[transformers.combinedPathHistoricalAgentOccupation(person.id) IF validators.nonEmpty(person.occupation)] {
     a rico:Activity ;
     rico:hasActivityType ehri_activity_types:occupation ;
     rico:generalDescription [person.occupation] @[person.languageCode MATCHING langcode_two_digit_equivalent] ;
     rico:isOrWasPerformedBy ehri_pers:[person.id] ;
 }
 
-ehri:AuthorityFunction ehri_pers:[transformers.combinedPathPersonFunction(person.funcs.person_id, person.funcs.func.index())] {
+ehri:AuthorityFunction ehri_pers:[transformers.combinedPathHistoricalAgentFunction(person.funcs.person_id, person.funcs.func.index())] {
     a rico:Activity ;
     rico:hasActivityType ehri_activity_types:function ;
     rico:generalDescription [person.funcs.func] @[person.funcs.langCode MATCHING langcode_two_digit_equivalent] ;
     rico:isOrWasPerformedBy ehri_pers:[person.funcs.person_id] ;
 }
 
-ehri:AuthorityMandate ehri_pers:[transformers.combinedPathPersonMandate(person.mandates.person_id, person.mandates.mandate.index())] {
+ehri:AuthorityMandate ehri_pers:[transformers.combinedPathHistoricalAgentMandate(person.mandates.person_id, person.mandates.mandate.index())] {
     a rico:Mandate ;
     rico:generalDescription [person.mandates.mandate] @[person.mandates.langCode MATCHING langcode_two_digit_equivalent] ;
     rico:authorizes ehri_pers:[person.mandates.person_id] ;

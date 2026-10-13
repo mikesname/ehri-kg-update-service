@@ -253,8 +253,8 @@ zha AS za &
 chi  AS zh &
 zho  AS zh &
 zul AS zu>
-FUNCTIONS transformers <scala: conf/vocabularies/Transformers.scala>
-FUNCTIONS validators <scala: conf/vocabularies/Validators.scala>
+FUNCTIONS transformers <scala: conf/functions/Transformers.scala>
+FUNCTIONS validators <scala: conf/functions/Validators.scala>
 SOURCE concepts <stdin>
 ITERATOR concept_iterator <jsonpath: $.data.query> {
 	PUSHED_FIELD item_id <identifier>

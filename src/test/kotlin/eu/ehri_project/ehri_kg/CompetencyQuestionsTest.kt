@@ -1,12 +1,9 @@
 package eu.ehri_project.ehri_kg
 
-import eu.ehri_project.ehri_kg.database.DatabaseManager
 import eu.ehri_project.ehri_kg.model.EHRIEvent
-import eu.ehri_project.ehri_kg.processors.EHRIUpdatesProcessor
-import eu.ehri_project.ehri_kg.processors.UpdatesProcessorFactory
 import eu.ehri_project.ehri_kg.support.FakeGraphQLClient
 import eu.ehri_project.ehri_kg.support.InMemorySparqlStore
-import eu.ehri_project.ehri_kg.support.testConfig
+import eu.ehri_project.ehri_kg.support.testProcessor
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
 import org.apache.jena.query.QueryExecutionFactory
@@ -45,13 +42,8 @@ class CompetencyQuestionsTest {
 
         /** Processes each entity in graphql/events.csv as a create event, with the response in graphql/<id>.json. */
         val processingErrors = run {
-            val config = testConfig(createTempDirectory().toFile())
             val graphQL = FakeGraphQLClient { File(example, "graphql/${it.id}.json").readText() }
-            val processor = EHRIUpdatesProcessor(
-                config,
-                DatabaseManager(config),
-                UpdatesProcessorFactory(config, graphQL, sparqlStore = store)::createUpdateProcessor
-            )
+            val processor = testProcessor(createTempDirectory().toFile(), graphQL, store)
             readCsv("graphql/events.csv")
                 .map { EHRIEvent("e2e", "create-event", "2026-01-01T00:00:00Z", it.getValue("id"), it.getValue("type")) }
                 .map(processor::processEvent)
