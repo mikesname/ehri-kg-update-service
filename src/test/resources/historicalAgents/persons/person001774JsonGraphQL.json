@@ -33,33 +33,7 @@
         ],
         "functions": [],
         "mandates": []
-      },
-      "links": [
-        {
-          "targets": [
-            {
-              "id": "il-002798-4019673-3690853",
-              "type": "DocumentaryUnit"
-            },
-            {
-              "id": "ehri_pers-001774",
-              "type": "HistoricalAgent"
-            }
-          ]
-        },
-        {
-          "targets": [
-            {
-              "id": "ehri_pers-001774",
-              "type": "HistoricalAgent"
-            },
-            {
-              "id": "il-002798-4019673-3690853",
-              "type": "DocumentaryUnit"
-            }
-          ]
-        }
-      ]
+      }
     }
   }
 }
