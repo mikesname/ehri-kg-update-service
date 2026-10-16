@@ -8,5 +8,12 @@ package eu.ehri_project.ehri_kg.processors
  */
 fun vocabularyPath(id: String): String = id.substringBefore('-').replace('_', '-') + "/" + id.substringAfter('-', "")
 
+/**
+ * Whether a historical agent or concept is in the KG: only those in EHRI's own vocabularies and authority sets,
+ * e.g. ehri_terms or ehri_pers, are; those in other sets, e.g. terezin_terms, are left out.
+ * Keep in step with inEhriSet in conf/functions/EHRIFunctions.scala.
+ */
+fun inEhriSet(id: String): Boolean = id.startsWith("ehri_")
+
 /** [vocabularyPath] as the local part of a SPARQL prefixed name, e.g. `ehri_vocabs:ehri-pers\/000001`. */
 fun vocabularyLocalName(id: String): String = vocabularyPath(id).replace("/", "\\/")

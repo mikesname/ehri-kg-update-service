@@ -17,8 +17,13 @@ class EHRIFunctions {
   def functionPath(id: String, index: String): String = s"${vocabularyPath(id)}/functions/${index.toInt + 1}"
   def mandatePath(id: String, index: String): String = s"${vocabularyPath(id)}/mandates/${index.toInt + 1}"
 
-  // Types of item an access point can link to
-  def isAgent(itemType: String): Boolean = itemType == "HistoricalAgent"
-  def isAgentOrConcept(itemType: String): Boolean = isAgent(itemType) || itemType == "CvocConcept"
+  // Whether a historical agent or concept is in the KG: only those in EHRI's own vocabularies and authority sets,
+  // e.g. ehri_terms or ehri_pers, are. Keep in step with inEhriSet in the service code.
+  def inEhriSet(id: String): Boolean = id.startsWith("ehri_")
+
+  // Items in the KG an access point can link to, by their type and id
+  def isAgent(itemType: String, id: String): Boolean = itemType == "HistoricalAgent" && inEhriSet(id)
+  def isAgentOrConcept(itemType: String, id: String): Boolean =
+    (itemType == "HistoricalAgent" || itemType == "CvocConcept") && inEhriSet(id)
 
 }

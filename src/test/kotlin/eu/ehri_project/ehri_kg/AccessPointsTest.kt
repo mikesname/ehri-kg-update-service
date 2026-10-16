@@ -58,10 +58,20 @@ class AccessPointsTest {
         mapOf("creators" to JsonArray(listOf(concept)))
     }
 
+    private fun accessPoint(id: String, type: String) =
+        JsonObject(mapOf("item" to JsonObject(mapOf("id" to JsonPrimitive(id), "type" to JsonPrimitive(type)))))
+
     /** The unit with an extra subject that is not an agent or concept, and whose id has no '-'. */
     val countrySubject = withQuery { query ->
-        val country = JsonObject(mapOf("item" to JsonObject(mapOf("id" to JsonPrimitive("be"), "type" to JsonPrimitive("Country")))))
-        mapOf("subjects" to JsonArray(query.subjects() + country))
+        mapOf("subjects" to JsonArray(query.subjects() + accessPoint("be", "Country")))
+    }
+
+    /** The unit with a creator and a subject outside EHRI's own authority sets and vocabularies. */
+    val otherSets = withQuery { query ->
+        mapOf(
+            "creators" to JsonArray(listOf(accessPoint("terezin_victims-person_iti_995281", "HistoricalAgent"))),
+            "subjects" to JsonArray(query.subjects() + accessPoint("terezin_terms-keyword_jmp_874", "CvocConcept")),
+        )
     }
 
     private fun process(vararg events: Pair<String, String>): InMemorySparqlStore =
@@ -110,6 +120,15 @@ class AccessPointsTest {
     fun `access points to other kinds of item are ignored`() {
         val kg = process("create-event" to countrySubject).dataset.defaultModel
 
+        assertTrue(kg.contains(unit, hasOrHadSubject, camp))
+        assertEquals(2, kg.listObjectsOfProperty(unit, hasOrHadSubject).toList().size)
+    }
+
+    @Test
+    fun `access points to agents and concepts outside EHRI's own sets are ignored`() {
+        val kg = process("create-event" to otherSets).dataset.defaultModel
+
+        assertFalse(kg.contains(unit, hasCreator))
         assertTrue(kg.contains(unit, hasOrHadSubject, camp))
         assertEquals(2, kg.listObjectsOfProperty(unit, hasOrHadSubject).toList().size)
     }
