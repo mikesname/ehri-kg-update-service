@@ -14,11 +14,13 @@ application {
 
 repositories {
     mavenCentral()
+    mavenLocal()
 }
 
 dependencies {
     testImplementation(kotlin("test"))
-    implementation("com.herminiogarcia:shexml-streaming_3:0.0.2")
+    testImplementation("org.apache.commons:commons-csv:1.8")
+    implementation("com.herminiogarcia:shexml-streaming_3:0.0.2-SNAPSHOT")
     implementation("io.ktor:ktor-client-core:3.3.1")
     implementation("io.ktor:ktor-client-cio:3.3.1")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")

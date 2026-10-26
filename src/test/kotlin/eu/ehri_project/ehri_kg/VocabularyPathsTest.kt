@@ -67,7 +67,7 @@ class VocabularyPathsTest {
             .filter { it.predicate.localName == "name" }.map { it.`object`.asLiteral().string }
         assertEquals(listOf("Renamed family"), names)
 
-        val deleted = """{"data": {"query": null}}"""
+        val deleted = """{"data": {"historicalAgents": {"items": [null]}}}"""
         assertEquals(emptyList(), triples("delete", "create-event" to original, "delete-event" to deleted).map { it.toString() })
     }
 }

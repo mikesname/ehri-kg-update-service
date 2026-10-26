@@ -259,7 +259,7 @@ FUNCTIONS validators <scala: conf/functions/Validators.scala>
 FUNCTIONS helpers <scala: conf/functions/EHRIFunctions.scala>
 SOURCE cb <stdin>
 
-ITERATOR cb_iterator <jsonpath: $.data.query> {
+ITERATOR cb_iterator <jsonpath: $.data.historicalAgents.items[*]> {
 	PUSHED_FIELD id <id>
     FIELD name <description.name>
     FIELD lastName <description.lastName>

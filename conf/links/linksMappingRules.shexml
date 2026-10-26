@@ -19,7 +19,7 @@ PREFIX ehri_is_copy_of_relations: <http://lod.ehri-project-test.eu/isCopyOfRelat
 PREFIX ehri_has_copy_relations: <http://lod.ehri-project-test.eu/hasCopyRelations/>
 FUNCTIONS validators <scala: conf/functions/Validators.scala>
 SOURCE links_file <stdin>
-ITERATOR components_iterator <jsonpath: $.data.query> {
+ITERATOR components_iterator <jsonpath: $.data.links.items[*]> {
     PUSHED_FIELD source_id <source.id>
     PUSHED_FIELD source_type <source.type>
     ITERATOR loc_org <[?(@.field=='locationOfOriginals' && @.source.id)]> {

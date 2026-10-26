@@ -265,7 +265,7 @@ chi  AS zh &
 zho  AS zh &
 zul AS zu>
 SOURCE holdings <stdin>
-ITERATOR components_iterator <jsonpath: $.data.query> {
+ITERATOR components_iterator <jsonpath: $.data.documentaryUnits.items[*]> {
 	PUSHED_FIELD holding_id <id>
 	FIELD parentId <parent.id>
 	FIELD identifier <identifier>

@@ -1,137 +1,141 @@
 {
   "data": {
-    "query": {
-      "id": "ehri_terms-1062",
-      "type": "CvocConcept",
-      "identifier": "1062",
-      "uri": null,
-      "seeAlso": [],
-      "latitude": null,
-      "longitude": null,
-      "descriptions": [
+    "concepts": {
+      "items": [
         {
-          "languageCode": "ukr",
-          "name": "Menšini",
-          "identifier": "Latn",
-          "altLabel": [],
-          "scopeNote": []
-        },
-        {
-          "languageCode": "ukr",
-          "name": "Меншини",
-          "identifier": null,
-          "altLabel": [],
-          "scopeNote": []
-        },
-        {
-          "languageCode": "rus",
-          "name": "men'šinstva",
-          "identifier": "Latn",
-          "altLabel": [],
-          "scopeNote": []
-        },
-        {
-          "languageCode": "rus",
-          "name": "меньшинства",
-          "identifier": null,
-          "altLabel": [],
-          "scopeNote": []
-        },
-        {
-          "languageCode": "nld",
-          "name": "Minderheden",
-          "identifier": null,
-          "altLabel": [],
-          "scopeNote": []
-        },
-        {
-          "languageCode": "pol",
-          "name": "mniejszości narodowe",
-          "identifier": null,
-          "altLabel": [],
-          "scopeNote": []
-        },
-        {
-          "languageCode": "hun",
-          "name": "Kisebbségek",
-          "identifier": null,
-          "altLabel": [],
-          "scopeNote": []
-        },
-        {
-          "languageCode": "fra",
-          "name": "minorité",
-          "identifier": null,
-          "altLabel": [],
-          "scopeNote": []
-        },
-        {
-          "languageCode": "ces",
-          "name": "menšiny",
-          "identifier": null,
-          "altLabel": [],
-          "scopeNote": []
-        },
-        {
-          "languageCode": "ita",
-          "name": "Minoranze",
-          "identifier": null,
-          "altLabel": [],
-          "scopeNote": []
-        },
-        {
-          "languageCode": "sh",
-          "name": "manjina",
-          "identifier": null,
-          "altLabel": [],
-          "scopeNote": []
-        },
-        {
-          "languageCode": "heb",
-          "name": "מיעוטים",
-          "identifier": null,
-          "altLabel": [],
-          "scopeNote": []
-        },
-        {
-          "languageCode": "eng",
-          "name": "Minorities",
-          "identifier": null,
-          "altLabel": [],
-          "scopeNote": []
-        },
-        {
-          "languageCode": "deu",
-          "name": "Minderheit",
-          "identifier": null,
-          "altLabel": [],
-          "scopeNote": []
-        },
-        {
-          "languageCode": "spa",
-          "name": "Hola, soy una prueba",
-          "identifier": null,
-          "altLabel": [],
-          "scopeNote": []
+          "id": "ehri_terms-1062",
+          "type": "CvocConcept",
+          "identifier": "1062",
+          "uri": null,
+          "seeAlso": [],
+          "latitude": null,
+          "longitude": null,
+          "descriptions": [
+            {
+              "languageCode": "ukr",
+              "name": "Menšini",
+              "identifier": "Latn",
+              "altLabel": [],
+              "scopeNote": []
+            },
+            {
+              "languageCode": "ukr",
+              "name": "Меншини",
+              "identifier": null,
+              "altLabel": [],
+              "scopeNote": []
+            },
+            {
+              "languageCode": "rus",
+              "name": "men'šinstva",
+              "identifier": "Latn",
+              "altLabel": [],
+              "scopeNote": []
+            },
+            {
+              "languageCode": "rus",
+              "name": "меньшинства",
+              "identifier": null,
+              "altLabel": [],
+              "scopeNote": []
+            },
+            {
+              "languageCode": "nld",
+              "name": "Minderheden",
+              "identifier": null,
+              "altLabel": [],
+              "scopeNote": []
+            },
+            {
+              "languageCode": "pol",
+              "name": "mniejszości narodowe",
+              "identifier": null,
+              "altLabel": [],
+              "scopeNote": []
+            },
+            {
+              "languageCode": "hun",
+              "name": "Kisebbségek",
+              "identifier": null,
+              "altLabel": [],
+              "scopeNote": []
+            },
+            {
+              "languageCode": "fra",
+              "name": "minorité",
+              "identifier": null,
+              "altLabel": [],
+              "scopeNote": []
+            },
+            {
+              "languageCode": "ces",
+              "name": "menšiny",
+              "identifier": null,
+              "altLabel": [],
+              "scopeNote": []
+            },
+            {
+              "languageCode": "ita",
+              "name": "Minoranze",
+              "identifier": null,
+              "altLabel": [],
+              "scopeNote": []
+            },
+            {
+              "languageCode": "sh",
+              "name": "manjina",
+              "identifier": null,
+              "altLabel": [],
+              "scopeNote": []
+            },
+            {
+              "languageCode": "heb",
+              "name": "מיעוטים",
+              "identifier": null,
+              "altLabel": [],
+              "scopeNote": []
+            },
+            {
+              "languageCode": "eng",
+              "name": "Minorities",
+              "identifier": null,
+              "altLabel": [],
+              "scopeNote": []
+            },
+            {
+              "languageCode": "deu",
+              "name": "Minderheit",
+              "identifier": null,
+              "altLabel": [],
+              "scopeNote": []
+            },
+            {
+              "languageCode": "spa",
+              "name": "Hola, soy una prueba",
+              "identifier": null,
+              "altLabel": [],
+              "scopeNote": []
+            }
+          ],
+          "broader": [
+            {
+              "id": "ehri_terms-637",
+              "identifier": "637"
+            }
+          ],
+          "narrower": [
+            {
+              "id": "ehri_terms-1075",
+              "identifier": "1075"
+            }
+          ],
+          "vocabulary": {
+            "id": "ehri_terms",
+            "type": "CvocVocabulary",
+            "identifier": "ehri-terms"
+          }
         }
-      ],
-      "broader": [
-        {
-          "id": "ehri_terms-637",
-          "identifier": "637"
-        }
-      ],
-      "narrower": [
-        {
-          "id": "ehri_terms-1075",
-          "identifier": "1075"
-        }
-      ],
-      "vocabulary": {
-        "id": "ehri_terms",
-        "type": "CvocVocabulary",
-        "identifier": "ehri-terms"
-      }
+      ]
     }
   }
 }

@@ -1,74 +1,78 @@
 {
   "data": {
-    "query": {
-      "id": "be-000001-kd_00001-1-1",
-      "type": "DocumentaryUnit",
-      "identifier": "1",
-      "otherIdentifiers": [],
-      "descriptions": [
+    "documentaryUnits": {
+      "items": [
         {
-          "languageCode": "eng",
-          "name": "Example item",
-          "identifier": null,
-          "accessPoints": [],
-          "dates": [],
-          "archivistNote": null,
-          "archivalHistory": null,
-          "acquisition": null,
-          "appraisal": null,
-          "accruals": null,
-          "biographicalHistory": null,
-          "conditionsOfAccess": null,
-          "conditionsOfReproduction": null,
-          "datesOfDescriptions": null,
-          "extentAndMedium": null,
-          "levelOfDescription": "item",
-          "relatedUnitsOfDescription": null,
-          "physicalCharacteristics": null,
-          "publicationNote": null,
-          "ref": null,
-          "rulesAndConventions": null,
-          "scopeAndContent": null,
-          "separatedUnitsOfDescription": null,
-          "systemOfArrangement": null,
-          "findingAids": [],
-          "languageOfMaterial": [],
-          "locationOfOriginals": [],
-          "locationOfCopies": [],
-          "parallelFormsOfName": [],
-          "physicalLocation": [],
-          "notes": [],
-          "scriptOfMaterial": [],
-          "sources": [],
-          "unitDates": []
-        }
-      ],
-      "parent": {
-        "id": "be-000001-kd_00001-1"
-      },
-      "itemCount": 0,
-      "repository": {
-        "id": "be-000001"
-      },
-      "creators": [],
-      "subjects": [
-        {
-          "item": {
-            "id": "ehri_pers-000001",
-            "type": "HistoricalAgent"
-          }
-        },
-        {
-          "item": {
-            "id": "ehri_pers-000002",
-            "type": "HistoricalAgent"
-          }
-        },
-        {
-          "item": {
-            "id": "ehri_fm-000002",
-            "type": "HistoricalAgent"
-          }
+          "id": "be-000001-kd_00001-1-1",
+          "type": "DocumentaryUnit",
+          "identifier": "1",
+          "otherIdentifiers": [],
+          "descriptions": [
+            {
+              "languageCode": "eng",
+              "name": "Example item",
+              "identifier": null,
+              "accessPoints": [],
+              "dates": [],
+              "archivistNote": null,
+              "archivalHistory": null,
+              "acquisition": null,
+              "appraisal": null,
+              "accruals": null,
+              "biographicalHistory": null,
+              "conditionsOfAccess": null,
+              "conditionsOfReproduction": null,
+              "datesOfDescriptions": null,
+              "extentAndMedium": null,
+              "levelOfDescription": "item",
+              "relatedUnitsOfDescription": null,
+              "physicalCharacteristics": null,
+              "publicationNote": null,
+              "ref": null,
+              "rulesAndConventions": null,
+              "scopeAndContent": null,
+              "separatedUnitsOfDescription": null,
+              "systemOfArrangement": null,
+              "findingAids": [],
+              "languageOfMaterial": [],
+              "locationOfOriginals": [],
+              "locationOfCopies": [],
+              "parallelFormsOfName": [],
+              "physicalLocation": [],
+              "notes": [],
+              "scriptOfMaterial": [],
+              "sources": [],
+              "unitDates": []
+            }
+          ],
+          "parent": {
+            "id": "be-000001-kd_00001-1"
+          },
+          "itemCount": 0,
+          "repository": {
+            "id": "be-000001"
+          },
+          "creators": [],
+          "subjects": [
+            {
+              "item": {
+                "id": "ehri_pers-000001",
+                "type": "HistoricalAgent"
+              }
+            },
+            {
+              "item": {
+                "id": "ehri_pers-000002",
+                "type": "HistoricalAgent"
+              }
+            },
+            {
+              "item": {
+                "id": "ehri_fm-000002",
+                "type": "HistoricalAgent"
+              }
+            }
+          ]
         }
       ]
     }

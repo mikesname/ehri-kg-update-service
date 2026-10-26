@@ -48,7 +48,7 @@ class UpdatesProcessorTest {
 
         assertEquals(loadResource("countries/ukJsonGraphQL.json"), response)
         val (_, query) = graphQL.requests.single()
-        assertTrue(query.contains("""Country(id: \"gb\")"""))
+        assertTrue(query.contains("""countries(ids: [\"gb\"])"""))
         assertFalse(query.contains("\n"))
     }
 

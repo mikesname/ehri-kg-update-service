@@ -256,7 +256,7 @@ zul AS zu>
 FUNCTIONS transformers <scala: conf/functions/Transformers.scala>
 FUNCTIONS validators <scala: conf/functions/Validators.scala>
 SOURCE concepts <stdin>
-ITERATOR concept_iterator <jsonpath: $.data.query> {
+ITERATOR concept_iterator <jsonpath: $.data.concepts.items[*]> {
 	PUSHED_FIELD item_id <identifier>
 	FIELD uri <uri>
 	FIELD see_also <seeAlso>
@@ -280,12 +280,7 @@ ITERATOR concept_iterator <jsonpath: $.data.query> {
     FIELD scope_note <scopeNote>
   }
 }
-ITERATOR data <jsonpath: $.data> {
-  FIELD item_id <query.identifier>
-  FIELD test <query>
-}
 EXPRESSION concept <concepts.concept_iterator>
-EXPRESSION test2 <concepts.data>
 
 ehri:Concept ehri_vocabs:[transformers.generateVocabUri(concept.vocabulary_id, concept.item_id)] {
   a skos:Concept ;

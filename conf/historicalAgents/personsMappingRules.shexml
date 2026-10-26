@@ -257,7 +257,7 @@ FUNCTIONS transformers <scala: conf/functions/Transformers.scala>
 FUNCTIONS validators <scala: conf/functions/Validators.scala>
 SOURCE people <stdin>
 
-ITERATOR people_iterator <jsonpath: $.data.query> {
+ITERATOR people_iterator <jsonpath: $.data.historicalAgents.items[*]> {
 	PUSHED_FIELD id <identifier>
     FIELD name <description.name>
     FIELD lastName <description.lastName>

@@ -12,7 +12,7 @@ PREFIX rico: <https://www.ica.org/standards/RiC/ontology#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 SOURCE countries <stdin>
 
-ITERATOR countries_iterator <jsonpath: $.data.query> {
+ITERATOR countries_iterator <jsonpath: $.data.countries.items[*]> {
 	FIELD id <id>
   FIELD type <type>
   FIELD identifier <identifier>

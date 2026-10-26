@@ -1,62 +1,66 @@
 {
   "data": {
-    "query": {
-      "id": "nl-000002",
-      "type": "Repository",
-      "identifier": "000002",
-      "latitude": null,
-      "longitude": null,
-      "descriptions": [
+    "repositories": {
+      "items": [
         {
-          "languageCode": "eng",
-          "name": "NIOD Institute for War, Holocaust and Genocide Studies",
-          "identifier": null,
-          "addresses": [
+          "id": "nl-000002",
+          "type": "Repository",
+          "identifier": "000002",
+          "latitude": null,
+          "longitude": null,
+          "descriptions": [
             {
-              "addressName": null,
-              "contactPerson": null,
-              "street": "Herengracht 380",
-              "municipality": "Amsterdam",
-              "firstdem": "Noord-Holland",
-              "countryCode": "NL",
-              "postalCode": "1016 CJ",
-              "email": [],
-              "telephone": [],
-              "fax": [],
-              "webpage": [
-                "https://www.niod.nl/en"
-              ]
+              "languageCode": "eng",
+              "name": "NIOD Institute for War, Holocaust and Genocide Studies",
+              "identifier": null,
+              "addresses": [
+                {
+                  "addressName": null,
+                  "contactPerson": null,
+                  "street": "Herengracht 380",
+                  "municipality": "Amsterdam",
+                  "firstdem": "Noord-Holland",
+                  "countryCode": "NL",
+                  "postalCode": "1016 CJ",
+                  "email": [],
+                  "telephone": [],
+                  "fax": [],
+                  "webpage": [
+                    "https://www.niod.nl/en"
+                  ]
+                }
+              ],
+              "typeOfEntity": null,
+              "history": null,
+              "geoculturalContext": null,
+              "mandates": null,
+              "administrativeStructure": null,
+              "records": null,
+              "buildings": null,
+              "holdings": null,
+              "findingAids": null,
+              "openingTimes": null,
+              "conditions": null,
+              "accessibility": null,
+              "researchServices": null,
+              "reproductionServices": null,
+              "publicAreas": null,
+              "rulesAndConventions": null,
+              "status": null,
+              "datesOfDescriptions": null,
+              "maintenanceNotes": null,
+              "otherFormsOfName": [],
+              "parallelFormsOfName": [],
+              "languages": [],
+              "scripts": [],
+              "sources": []
             }
           ],
-          "typeOfEntity": null,
-          "history": null,
-          "geoculturalContext": null,
-          "mandates": null,
-          "administrativeStructure": null,
-          "records": null,
-          "buildings": null,
-          "holdings": null,
-          "findingAids": null,
-          "openingTimes": null,
-          "conditions": null,
-          "accessibility": null,
-          "researchServices": null,
-          "reproductionServices": null,
-          "publicAreas": null,
-          "rulesAndConventions": null,
-          "status": null,
-          "datesOfDescriptions": null,
-          "maintenanceNotes": null,
-          "otherFormsOfName": [],
-          "parallelFormsOfName": [],
-          "languages": [],
-          "scripts": [],
-          "sources": []
+          "country": {
+            "id": "nl"
+          }
         }
-      ],
-      "country": {
-        "id": "nl"
-      }
+      ]
     }
   }
 }

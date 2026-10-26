@@ -1,36 +1,40 @@
 {
   "data": {
-    "query": {
-      "id": "ehri_terms-1",
-      "type": "CvocConcept",
-      "identifier": "1",
-      "uri": null,
-      "seeAlso": [],
-      "latitude": null,
-      "longitude": null,
-      "descriptions": [
+    "concepts": {
+      "items": [
         {
-          "languageCode": "eng",
-          "name": "Resistance",
-          "identifier": null,
-          "altLabel": [
-            "Resistance movements"
+          "id": "ehri_terms-1",
+          "type": "CvocConcept",
+          "identifier": "1",
+          "uri": null,
+          "seeAlso": [],
+          "latitude": null,
+          "longitude": null,
+          "descriptions": [
+            {
+              "languageCode": "eng",
+              "name": "Resistance",
+              "identifier": null,
+              "altLabel": [
+                "Resistance movements"
+              ],
+              "scopeNote": []
+            }
           ],
-          "scopeNote": []
+          "broader": [],
+          "narrower": [
+            {
+              "id": "ehri_terms-2",
+              "identifier": "2"
+            }
+          ],
+          "vocabulary": {
+            "id": "ehri_terms",
+            "type": "CvocVocabulary",
+            "identifier": "ehri-terms"
+          }
         }
-      ],
-      "broader": [],
-      "narrower": [
-        {
-          "id": "ehri_terms-2",
-          "identifier": "2"
-        }
-      ],
-      "vocabulary": {
-        "id": "ehri_terms",
-        "type": "CvocVocabulary",
-        "identifier": "ehri-terms"
-      }
+      ]
     }
   }
 }

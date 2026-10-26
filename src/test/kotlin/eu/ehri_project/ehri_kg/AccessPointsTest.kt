@@ -39,10 +39,12 @@ class AccessPointsTest {
 
     val original = loadResource("example/graphql/$unitId.json")
 
-    /** The unit's GraphQL response, with some fields of its query replaced. */
+    /** The unit's GraphQL response, with some of the unit's fields replaced. */
     private fun withQuery(change: (JsonObject) -> Map<String, JsonElement>): String {
-        val query = Json.parseToJsonElement(original).jsonObject.getValue("data").jsonObject.getValue("query").jsonObject
-        return JsonObject(mapOf("data" to JsonObject(mapOf("query" to JsonObject(query + change(query)))))).toString()
+        val unit = Json.parseToJsonElement(original).jsonObject.getValue("data").jsonObject
+            .getValue("documentaryUnits").jsonObject.getValue("items").jsonArray.single().jsonObject
+        val items = JsonObject(mapOf("items" to JsonArray(listOf(JsonObject(unit + change(unit))))))
+        return JsonObject(mapOf("data" to JsonObject(mapOf("documentaryUnits" to items)))).toString()
     }
 
     private fun JsonObject.subjects() = getValue("subjects").jsonArray

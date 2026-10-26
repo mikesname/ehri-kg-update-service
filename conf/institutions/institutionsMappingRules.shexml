@@ -259,7 +259,7 @@ chi  AS zh &
 zho  AS zh & 
 zul AS zu>
 SOURCE repositories <stdin>
-ITERATOR repositories_iterator <jsonpath: $.data.query> {
+ITERATOR repositories_iterator <jsonpath: $.data.repositories.items[*]> {
 	PUSHED_FIELD id <id>
   	FIELD type <type>
 	FIELD identifier <identifier>

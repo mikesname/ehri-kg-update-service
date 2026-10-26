@@ -1,31 +1,35 @@
 {
   "data": {
-    "query": {
-      "id": "ehri_cb-004284",
-      "identifier": "004284",
-      "description": {
-        "languageCode": "nld",
-        "name": "Vrijwilligerslegioen Nederland",
-        "identifier": null,
-        "dates": [],
-        "lastName": null,
-        "firstName": null,
-        "source": null,
-        "typeOfEntity": "corporateBody",
-        "datesOfExistence": "1941",
-        "biographicalHistory": "[Test Update] Dutch volunteers to fight with the Nazi's on the East-front",
-        "legalStatus": null,
-        "structure": null,
-        "generalContext": null,
-        "occupation": null,
-        "otherFormsOfName": [],
-        "parallelFormsOfName": [
-          "Freiwilligenlegion Niederlande"
-        ],
-        "place": [],
-        "functions": [],
-        "mandates": []
-      }
+    "historicalAgents": {
+      "items": [
+        {
+          "id": "ehri_cb-004284",
+          "identifier": "004284",
+          "description": {
+            "languageCode": "nld",
+            "name": "Vrijwilligerslegioen Nederland",
+            "identifier": null,
+            "dates": [],
+            "lastName": null,
+            "firstName": null,
+            "source": null,
+            "typeOfEntity": "corporateBody",
+            "datesOfExistence": "1941",
+            "biographicalHistory": "[Test Update] Dutch volunteers to fight with the Nazi's on the East-front",
+            "legalStatus": null,
+            "structure": null,
+            "generalContext": null,
+            "occupation": null,
+            "otherFormsOfName": [],
+            "parallelFormsOfName": [
+              "Freiwilligenlegion Niederlande"
+            ],
+            "place": [],
+            "functions": [],
+            "mandates": []
+          }
+        }
+      ]
     }
   }
 }
