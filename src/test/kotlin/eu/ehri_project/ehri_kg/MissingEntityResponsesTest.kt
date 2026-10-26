@@ -18,15 +18,12 @@ class MissingEntityResponsesTest {
         "links/linksMappingRules.shexml" to "links",
     )
 
-    /** Nodes some mappings always produce, whatever the data. */
-    private val constant = "http://lod.ehri-project-test.eu/activityTypes/"
-
     @Test
     fun `a missing entity is mapped to no data`() {
         val subjects = mappings.mapValues { (rules, field) ->
             ShExMLMappingLauncherProxy()
                 .convert(File("conf/$rules").readText(), """{"data": {"$field": {"items": [null]}}}""")
-                .defaultModel.listSubjects().toList().map { it.toString() }.filterNot { it.startsWith(constant) }
+                .defaultModel.listSubjects().toList().map { it.toString() }
         }
         assertEquals(mappings.mapValues { emptyList<String>() }, subjects)
     }

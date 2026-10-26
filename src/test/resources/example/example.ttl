@@ -419,19 +419,6 @@ ehri_material_script:Latn
         rico:name "Latn" ;
         ehri:isOrWasScriptOf ehri_units:be-000001-kd_00001 .
 
-# Activity types
-ehri_activity_types:acquisition
-        a ehri:AcquisitionType ;
-        rico:name "Acquisition"@en .
-
-ehri_activity_types:function
-        a ehri:FunctionType ;
-        rico:name "Function"@en .
-
-ehri_activity_types:occupation
-        a rico:OccupationType ;
-        rico:name "Occupation"@en .
-
 
 #############
 ### Dates ###

@@ -375,12 +375,3 @@ ehri:AuthorityMandate ehri_pers:[transformers.combinedPathHistoricalAgentMandate
     rico:generalDescription [person.mandates.mandate] @[person.mandates.langCode MATCHING langcode_two_digit_equivalent] ;
     rico:authorizes ehri_pers:[person.mandates.person_id] ;
 }
-ehri:FunctionType ehri_activity_types:function {
-    a ehri:FunctionType ;
-    rico:name "Function"@en ;
-}
-
-ehri:OccupationType ehri_activity_types:occupation {
-    a rico:OccupationType ;
-    rico:name "Occupation"@en ;
-}

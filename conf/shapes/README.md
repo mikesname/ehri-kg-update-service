@@ -5,8 +5,8 @@ Copies of the ShEx and SHACL shapes in `src/shapes/1.0.2` of the
 service's mappings:
 
 - **Activity types:** occupations, functions and acquisitions have `rico:hasActivityType` with the
-  instances `activityTypes/occupation`, `activityTypes/function` and `activityTypes/acquisition`. Previously the
-  shapes expected `rico:hasOrHadActivityType` with a class. Acquisitions are targeted as the objects of
+  instances `activityTypes/occupation`, `activityTypes/function` and `activityTypes/acquisition`, which the
+  KG doesn't yet define. Previously the shapes expected `rico:hasOrHadActivityType` with a class. Acquisitions are targeted as the objects of
   `rico:resultsOrResultedFrom`, not as every `rico:Activity`.
 - **Holdings, renamed properties:** `ehri:biographicalHistory` and `ehri:archivalHistory` (for
   `rico:history`), `rico:recordResourceSourceOfInformation` (for `ehri:sources`), `rico:note` (for `ehri:notes`)

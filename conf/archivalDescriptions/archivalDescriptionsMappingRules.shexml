@@ -445,8 +445,3 @@ ehri:HoldingCreator ehri_vocabs:[helpers.vocabularyPath(holding.creators.id) IF 
 ehri:HoldingSubject ehri_vocabs:[helpers.vocabularyPath(holding.subjects.id) IF helpers.isAgentOrConcept(holding.subjects.type, holding.subjects.id)] {
 	rico:isOrWasSubjectOf ehri_units:[holding.subjects.holding_id] ;
 }
-
-ehri:AcquisitionType ehri_activity_types:acquisition {
-	a ehri:AcquisitionType ;
-	rico:name "Acquisition"@en ;
-}

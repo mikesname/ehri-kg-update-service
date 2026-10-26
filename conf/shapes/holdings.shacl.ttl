@@ -234,14 +234,6 @@ ehri:Acquisition  a     sh:NodeShape ;
                         ] ;
         sh:targetObjectsOf  rico:resultsOrResultedFrom .
 
-ehri:AcquisitionType  a  sh:NodeShape ;
-        sh:nodeKind     sh:IRI ;
-        sh:property     [ sh:datatype  rdf:langString ;
-                          sh:minCount  1 ;
-                          sh:path      rico:name
-                        ] ;
-        sh:targetClass  ehri:AcquisitionType .
-
 ehri:Institution  a     sh:NodeShape ;
         sh:nodeKind     sh:IRI ;
         sh:property     [ sh:minCount  1 ;
