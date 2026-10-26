@@ -39,15 +39,17 @@ class CompetencyQuestionsTest {
         }
 
         /** Processes each entity in graphql/events.csv as a create event, with the response in graphql/<id>.json. */
-        val processingErrors = run {
+        val reports = run {
             val graphQL = FakeGraphQLClient { File(examplesDir, "graphql/${it.id}.json").readText() }
             val processor = testProcessor(createTempDirectory().toFile(), graphQL, store)
             readCsv("graphql/events.csv")
                 .map { EHRIEvent("e2e", "create-event", "2026-01-01T00:00:00Z", it.getValue("id"), it.getValue("type")) }
                 .map(processor::processEvent)
-                .filter { it.errors.isNotEmpty() }
-                .map { "${it.receivedEvent.id}: ${it.errors.lineSequence().first()}" }
         }
+
+        val processingErrors = reports
+            .filter { it.errors.isNotEmpty() }
+            .map { "${it.receivedEvent.id}: ${it.errors.lineSequence().first()}" }
 
         init {
             File("build/e2e").mkdirs()
@@ -68,6 +70,11 @@ class CompetencyQuestionsTest {
     @Test
     fun `the example GraphQL responses are processed without errors`() {
         assertEquals(emptyList(), processingErrors)
+    }
+
+    @Test
+    fun `the example GraphQL responses are mapped to data conforming to the shapes`() {
+        assertEquals(emptyList(), reports.flatMap { report -> report.violations.map { "${report.receivedEvent.id}: $it" } })
     }
 
     @Test
@@ -96,7 +103,7 @@ class CompetencyQuestionsTest {
                     val actual: ResultSetRewindable = QueryExecutionFactory.create(query, example)
                         .use { ResultSetFactory.copyResults(it.execSelect()) }
                     val expected = File(examplesDir, "expected/${cq["#"]}.tsv").inputStream()
-                        .use { ResultSetFactory.copyResults(ResultSetMgr.read(it, ResultSetLang.SPARQLResultSetTSV)) }
+                        .use { ResultSetFactory.copyResults(ResultSetMgr.read(it, ResultSetLang.RS_TSV)) }
                     val matches = if (query.hasOrderBy()) ResultSetCompare.equalsByValueAndOrder(expected, actual)
                     else ResultSetCompare.equalsByValue(expected, actual)
                     debug(cq["Competency Question"], actual)
@@ -119,7 +126,7 @@ class CompetencyQuestionsTest {
                 val actual: ResultSetRewindable = QueryExecutionFactory.create(query, store.dataset)
                     .use { ResultSetFactory.copyResults(it.execSelect()) }
                 val expected = File(examplesDir, "expected/${cq["#"]}.tsv").inputStream()
-                    .use { ResultSetFactory.copyResults(ResultSetMgr.read(it, ResultSetLang.SPARQLResultSetTSV)) }
+                    .use { ResultSetFactory.copyResults(ResultSetMgr.read(it, ResultSetLang.RS_TSV)) }
                 val matches = if (query.hasOrderBy()) ResultSetCompare.equalsByValueAndOrder(expected, actual)
                     else ResultSetCompare.equalsByValue(expected, actual)
                 debug(cq["Competency Question"], actual)

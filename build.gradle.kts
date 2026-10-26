@@ -29,6 +29,9 @@ dependencies {
     implementation("com.github.ajalt.clikt:clikt:5.0.1")
     implementation("org.apache.kafka", "kafka-clients", "4.1.0")
     implementation("org.xerial:sqlite-jdbc:3.53.2.1")
+    implementation(platform("org.apache.jena:jena-bom:5.5.0"))
+    implementation("org.apache.jena:jena-shex")
+    implementation("org.apache.jena:jena-shacl")
 }
 
 tasks.test {

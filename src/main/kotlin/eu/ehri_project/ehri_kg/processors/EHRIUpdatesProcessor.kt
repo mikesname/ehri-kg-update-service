@@ -8,6 +8,7 @@ import eu.ehri_project.ehri_kg.model.EHRITypes
 import eu.ehri_project.ehri_kg.model.EHRIUpdateReport
 import eu.ehri_project.ehri_kg.model.UnsupportedEntityTypeException
 import eu.ehri_project.ehri_kg.sparql.SparqlDatasetQueryProcessor
+import eu.ehri_project.ehri_kg.validation.KGValidator
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.core.Single
@@ -42,7 +43,8 @@ class EHRIUpdatesProcessor(
 
     fun processEvent(event: EHRIEvent): EHRIUpdateReport {
         try {
-            with(createUpdateProcessor(selectEntityTypeCase(event.type, event.id))) {
+            val type = selectEntityTypeCase(event.type, event.id)
+            with(createUpdateProcessor(type)) {
                 if(!previousEventErroredOrNotProcessed && database.checkIfSuccessfullyProcessed(event)) {
                     logger.info { "Skipping the event as it was already successfully processed in a previous run: $event" }
                     return emptyEventReport
@@ -51,10 +53,11 @@ class EHRIUpdatesProcessor(
                     val graphQLContent = fetchGraphQLData(event)
                     val dataBefore = getDataStatus(event)
                     val turtleResult = transformToRDF(graphQLContent)
+                    val violations = validate(type, turtleResult)
                     val executedQueries = update(event, turtleResult)
                     val dataAfter = getDataStatus(event)
                     val dataDiff = compareGraphs(dataBefore, dataAfter)
-                    return EHRIUpdateReport(event, executedQueries, dataDiff, dryRun = dryRun)
+                    return EHRIUpdateReport(event, executedQueries, dataDiff, violations = violations, dryRun = dryRun)
                 }
             }
         } catch (e: UnsupportedEntityTypeException) {
@@ -63,6 +66,26 @@ class EHRIUpdatesProcessor(
         } catch (e: Exception) {
             return EHRIUpdateReport(event, emptyList(), emptyList(), e.stackTraceToString(), dryRun = dryRun)
         }
+    }
+
+    /** The validators of each entity type's mapped data, for the types with shapes configured. */
+    private val validators = mutableMapOf<EHRITypes, KGValidator?>()
+
+    private fun validate(type: EHRITypes, mapped: Dataset): List<String> {
+        val validator = validators.getOrPut(type) { config.getOptional(shapesProperty(type))?.let(::KGValidator) }
+        val violations = validator?.validate(mapped.defaultModel.graph).orEmpty().map { it.toString() }
+        violations.forEach { logger.warn { "Mapped data does not conform to its shapes: $it" } }
+        return violations
+    }
+
+    private fun shapesProperty(type: EHRITypes): String = when(type) {
+        EHRITypes.COUNTRY -> "countriesShapes"
+        EHRITypes.INSTITUTION -> "institutionsShapes"
+        EHRITypes.ARCHIVAL_DESCRIPTION -> "archivalDescriptionsShapes"
+        EHRITypes.VOCABULARY -> "vocabulariesShapes"
+        EHRITypes.CORPORATE_BODY -> "corporateBodiesShapes"
+        EHRITypes.PERSON -> "personsShapes"
+        EHRITypes.LINK -> "linksShapes"
     }
 
     private fun selectEntityTypeCase(type: String, id: String? = "null"): EHRITypes {

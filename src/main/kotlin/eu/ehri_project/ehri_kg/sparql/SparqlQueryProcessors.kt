@@ -4,7 +4,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.apache.jena.query.*
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.ModelFactory
-import org.apache.jena.update.UpdateExecutionFactory
+import org.apache.jena.update.UpdateExecution
 import org.apache.jena.update.UpdateFactory
 
 class SparqlDatasetQueryProcessor(val dataset: Dataset) {
@@ -13,7 +13,7 @@ class SparqlDatasetQueryProcessor(val dataset: Dataset) {
         val compiledQuery = QueryFactory.create(query)
         return QueryExecution
             .create()
-            .dataset(dataset.asDatasetGraph())
+            .dataset(dataset)
             .query(compiledQuery)
             .build().execSelect()
     }
@@ -47,22 +47,16 @@ class SparqlEndpointQueryProcessor(val endpoint: String) {
 
     fun query(query: String): ResultSet {
         val compiledQuery = QueryFactory.create(query)
-        return QueryExecutionFactory
-            .sparqlService(endpoint, compiledQuery)
-            .execSelect()
+        return QueryExecution.service(endpoint).query(compiledQuery).build().execSelect()
     }
 
     fun construct(query: String): Model {
         val compiledQuery = QueryFactory.create(query)
-        return QueryExecutionFactory
-            .sparqlService(endpoint, compiledQuery)
-            .execConstruct()
+        return QueryExecution.service(endpoint).query(compiledQuery).build().use { it.execConstruct() }
     }
 
     fun update(query: String) {
         val compiledQuery = UpdateFactory.create(query)
-        UpdateExecutionFactory
-            .createRemote(compiledQuery, endpoint)
-            .execute()
+        UpdateExecution.service(endpoint).update(compiledQuery).execute()
     }
 }

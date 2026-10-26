@@ -48,6 +48,14 @@ that is transformed following a series of sequential steps:
 6. Establish the data status *after* performing the update
 7. Compare the results in 3 and 6 and generate the event report
 
+## Validation
+After mapping an entity, the service validates the mapped data against the ShEx and SHACL shapes of its type, which
+are copies of those in the `src/shapes/1.0.2` folder of the [EHRI-KG-mapping repository](https://github.com/EHRI/ehri-kg-mapping),
+under `conf/shapes`. The `<type>Shapes` properties of `conf/config.properties` name each type's shapes: for
+`conf/shapes/holdings`, the ShEx schema `holdings.shex` with the shape map `holdings.smap`, and the SHACL shapes
+`holdings.shacl.ttl`. Violations are logged and listed under `violations` in the event's report, and the data is
+applied regardless. Types without a `<type>Shapes` property are not validated.
+
 ## Requirements
 The minimum versions for this software to work are:
 * JDK 17 or any compatible version (e.g., Open JDK 17)
@@ -73,3 +81,4 @@ The following dependencies are used by this software:
 | ch.qos.logback / logback-classic                   | Eclipse Public License v1.0 or LGPL-2.1 |
 | com.github.ajalt.clikt / clikt                     | Apache License 2.0                      |
 | org.apache.kafka / kafka-clients                   | Apache License 2.0                      |
+| org.apache.jena / jena-shex, jena-shacl            | Apache License 2.0                      |
